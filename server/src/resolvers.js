@@ -21,7 +21,7 @@ const data = {
     jared: {
       id: 'jared',
       following: ['selina'],
-      homepageLists: [3],
+      homepageLists: [3, 4],
     }
   },
   lists: {
@@ -35,6 +35,16 @@ const data = {
       editors: ['selina'],
       recipes: [1],
     },
+    4: {
+      id: 4,
+      title: 'Great freezer meals',
+      created: Date.now(),
+      updated: Date.now(),
+      author: 'jared',
+      public: true,
+      editors: ['selina'],
+      recipes: [1],
+    }
   },
 
   recipes: {
@@ -53,8 +63,31 @@ const data = {
       ],
       ingredients: [
         {id: 2, ingredient: 2, amount: 2, comments: 'beaten'},
-        {id: 3, ingredient: 3, amount: 1.5},
-        {id: 4, ingredient: 4, amount: 2},
+        {id: 3, ingredient: 3, amount: 1.5, unit: 'cups'},
+        {id: 4, ingredient: 4, amount: 2, unit: 'cups'},
+      ],
+      description: 'This is the best',
+      prepTime: 5,
+      cookTime: 20,
+      yield: 5,
+      yieldUnit: 'meals',
+    },
+    2: {
+      authorId: 'selina',
+      id: '2',
+      title: 'Eggs benedict',
+      created: Date.now() - 1000,
+      updated: Date.now(),
+      tags: [2],
+      source: "google.com/things",
+      instructions: [
+        {text: 'Heat up a pan', ingredientsUsed: []},
+        {text: 'put some olive oil in it', ingredientsUsed: []},
+        {text: 'Eat them', ingredientsUsed: []},
+      ],
+      ingredients: [
+        {id: 0, ingredient: 2, amount: 2},
+        {id: 1, ingredient: 3, amount: 1, unit: 'T'},
       ],
       description: 'This is the best',
       prepTime: 5,
@@ -68,6 +101,7 @@ const data = {
     2: {id: 2, authorId: 'jared', name: 'egg', created: Date.now(), aisle: 'dairy', defaultUnit: null},
     3: {id: 3, authorId: 'jared', name: 'milk', created: Date.now(), aisle: 'dairy', defaultUnit: 'cups'},
     4: {id: 4, authorId: 'jared', name: 'whole wheat flour', created: Date.now(), aisle: null, defaultUnit: 'cups'},
+    5: {id: 5, authorId: 'jared', name: 'olive oil', created: Date.now(), aisle: null, defaultUnit: 'T'},
   },
   tags: {
     2: {id: 2, authorId: 'jared', name: 'Asian', created: Date.now()},
@@ -82,11 +116,15 @@ let nextMessageId = 5;
 
 const pubsub = new PubSub();
 
-const getByParam = (type, param) => (_, params) => data[type[params[param]]]
+const getByParam = (type, param) => (_, params) => data[type][params[param]]
 const getByAttr = (type, attr) => obj => data[type][obj[attr]]
 const getsByParam = (type, param) => (_, params) => Object.values(data[type]).filter(obj => obj[param] === params[param])
 const getsBackByAttr = (type, attr, objAttr) => parent => Object.values(data[type]).filter(obj => obj[objAttr] === parent[attr])
-const getsByAttr = (type, attr) => obj => obj[attr].map(id => data[type][id])
+const getsByAttr = (type, attr) => obj => {
+  if (!obj[attr]) throw new Error('Obj not have ' + attr)
+  if (!Array.isArray(obj[attr])) throw new Error('Obj attr not array ' + attr + ' ' + JSON.stringify(obj[attr]))
+  return obj[attr].map(id => data[type][id])
+}
 
 const uuid = () => Math.random().toString(16).slice(2)
 
@@ -100,9 +138,12 @@ export const resolvers = {
     channel: (root, { id }) => {
       return channels.find(channel => channel.id === id);
     },
+    list: getByParam('lists', 'id'),
+    recipe: getByParam('recipes', 'id'),
     home: () => ({id: 'hello'}),
     user: getByParam('users', 'id'),
   },
+
   RecipeIngredient: {
     ingredient: getByAttr('ingredients', 'ingredient'),
   },
@@ -111,6 +152,7 @@ export const resolvers = {
   },
   List: {
     author: getByAttr('users', 'author'),
+    recipes: getsByAttr('recipes', 'recipes'),
   },
   Recipe: {
     author: getByAttr('users', 'authorId'),
@@ -174,11 +216,12 @@ export const resolvers = {
         title,
         created: Date.now(),
       }
+      return data.tags[id]
     },
 
     addIngredient: (_, {name, plural, defaultUnit, aisle}, {currentUser}) => {
       const id = uuid()
-      data.tags[id] = {
+      data.ingredients[id] = {
         id,
         name,
         plural,
@@ -187,6 +230,7 @@ export const resolvers = {
         author: currentUser,
         created: Date.now(),
       }
+      return data.ingredients[id]
     },
 
     addChannel: (root, args) => {

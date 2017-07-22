@@ -7,6 +7,8 @@ import {
 } from 'react-router-dom';
 
 import './App.css';
+import Home from './home';
+import Recipe from './recipe';
 import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
 import ChannelDetails from './components/ChannelDetails';
@@ -58,15 +60,26 @@ const client = new ApolloClient({
 });
 
 class App extends Component {
+  // TODO handle auth
+  // TODO I want the home page to look gated, but allow people to
+  // share recipes by ID
   render() {
     return (
       <ApolloProvider client={client}>
         <BrowserRouter>
           <div className="App">
-            <Link to="/" className="navbar">React + GraphQL Tutorial</Link>
+            <Link to="/" className="navbar">
+              Foood
+              <input
+                placeholder="Search"
+              />
+              <button>
+                Add recipe
+              </button>
+            </Link>
             <Switch>
-              <Route exact path="/" component={ChannelsListWithData}/>
-              <Route path="/channel/:channelId" component={ChannelDetails}/>
+              <Route exact path="/" component={Home}/>
+              <Route path="/recipe/:id" component={Recipe}/>
               <Route component={ NotFound }/>
             </Switch>
           </div>

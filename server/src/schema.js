@@ -10,7 +10,7 @@ type User {
   id: ID!
   email: String!
   name: String!
-  joined: Int!
+  joined: Float!
 
   # forward connections
   recipes(start: Int, max: Int): [Recipe!]!
@@ -34,7 +34,8 @@ type Made {
   notes: String
   addedIngredients: [RecipeIngredient!]!
   removedIngredients: [RecipeIngredient!]!
-  date: Int
+  images: [String!]
+  date: Float
 
   totalTime: Int
   cookTime: Int
@@ -43,13 +44,13 @@ type Made {
 
 type List {
   id: ID!
-  created: Int!
-  updated: Int!
+  created: Float!
+  updated: Float!
   author: User!
   isPrivate: Boolean
   editors: [User!]!
   title: String!
-  recipes: [Recipe!]!
+  recipes(start: Int, max: Int): [Recipe!]!
 }
 
 type Comment {
@@ -57,16 +58,19 @@ type Comment {
   author: User!
   text: String!
   replyTo: Comment
-  created: Int!
+  created: Float!
 }
 
+# TODO keep track of unusual tools needed
+# or maybe just all tools needed?
 type Recipe {
   id: ID!
   title: String!
   author: User!
-  created: Int!
-  updated: Int!
+  created: Float!
+  updated: Float!
   isPrivate: Boolean
+  imageUrl: String
   tags: [Tag!]! # TODO might be good to have user access controls w/ tags? dunno
   source: String # Might be a URL, might not
   instructions: [Instruction!]!
@@ -84,7 +88,7 @@ type Recipe {
 }
 
 type Instruction {
-  id: ID!
+  # id: ID!
   # author: User!
   text: String!
   ingredientsUsed: [RecipeIngredient!]
@@ -104,7 +108,7 @@ type Tag {
   id: ID!
   author: User!
   name: String!
-  created: Int!
+  created: Float!
 }
 
 # NOTE Ingredient names are also immutable
@@ -114,7 +118,7 @@ type Ingredient {
   name: String!
   plural: String
   defaultUnit: String
-  created: Int!
+  created: Float!
   # I as moderator can go back and make the aisles and stuff
   aisle: String
 }
@@ -184,7 +188,6 @@ type Query {
   user(id: ID!): User!
   recipe(id: ID!): Recipe!
   list(id: ID!): List!
-
 
   channels: [Channel]
   channel(id: ID!): Channel
