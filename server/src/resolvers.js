@@ -33,7 +33,7 @@ const data = {
       author: 'jared',
       public: true,
       editors: ['selina'],
-      recipes: [1],
+      recipes: [1, 2],
     },
     4: {
       id: 4,
@@ -89,7 +89,7 @@ const data = {
         {id: 0, ingredient: 2, amount: 2},
         {id: 1, ingredient: 3, amount: 1, unit: 'T'},
       ],
-      description: 'This is the best',
+      description: 'From Selina\'s childhood',
       prepTime: 5,
       cookTime: 20,
       yield: 5,

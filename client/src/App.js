@@ -23,11 +23,11 @@ import {
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 
 const networkInterface = createNetworkInterface({ uri: 'http://localhost:4000/graphql' });
-networkInterface.use([{
-  applyMiddleware(req, next) {
-    setTimeout(next, 500);
-  },
-}]);
+// networkInterface.use([{
+//   applyMiddleware(req, next) {
+//     setTimeout(next, 500);
+//   },
+// }]);
 
 const wsClient = new SubscriptionClient(`ws://localhost:4000/subscriptions`, {
   reconnect: true
@@ -78,10 +78,10 @@ class App extends Component {
               </button>
             </Link>
             <Switch>
-              <Route exact path="/" component={Home}/>
-              <Route path="/recipe/:id" component={Recipe}/>
-              <Route component={ NotFound }/>
+              <Route path="/" component={Home} />
+              <Route component={ NotFound } />
             </Switch>
+            <Route path="/recipe/:id" component={Recipe}/>
           </div>
         </BrowserRouter>
       </ApolloProvider>
