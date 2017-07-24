@@ -23,7 +23,7 @@ const List = ({id, data: {list, loading, error}}) => {
   const {updated, author, title, recipes} = list
   return <div style={{
     boxShadow: '0 0 3px #aaa',
-            borderRadius: 3,
+    borderRadius: 3,
   }}>
     <div style={{padding: 10, borderBottom: '1px solid #aaa'}}>
       {title} (updated {new Date(updated).toLocaleDateString()})
@@ -32,6 +32,7 @@ const List = ({id, data: {list, loading, error}}) => {
       {recipes.map(r => (
         <Link
           to={"/recipe/" + r.id}
+          replace
           style={{
             margin: 10,
             cursor: 'pointer',

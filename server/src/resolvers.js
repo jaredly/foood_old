@@ -120,6 +120,7 @@ const getByParam = (type, param) => (_, params) => data[type][params[param]]
 const getByAttr = (type, attr) => obj => data[type][obj[attr]]
 const getsByParam = (type, param) => (_, params) => Object.values(data[type]).filter(obj => obj[param] === params[param])
 const getsBackByAttr = (type, attr, objAttr) => parent => Object.values(data[type]).filter(obj => obj[objAttr] === parent[attr])
+const getsBackByFn = (type, attr, fn) => parent => Object.values(data[type]).filter(obj => fn(obj, parent[attr]))
 const getsByAttr = (type, attr) => obj => {
   if (!obj[attr]) throw new Error('Obj not have ' + attr)
   if (!Array.isArray(obj[attr])) throw new Error('Obj attr not array ' + attr + ' ' + JSON.stringify(obj[attr]))
@@ -157,6 +158,7 @@ export const resolvers = {
   Recipe: {
     author: getByAttr('users', 'authorId'),
     tags: getsByAttr('tags', 'tags'),
+    lists: getsBackByFn('list', 'id', (obj, id) => obj.recipes.includes(id)),
   },
   UserHome: {
     user: (_, __, context) => data.users[context.currentUser],

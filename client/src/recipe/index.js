@@ -34,7 +34,7 @@ const Inner = div({
 
 const Recipe = ({match: {params: {id}, url}, history}) => {
   const parent = url.split('/').slice(0, -2).join('/') || '/'
-  return <Backdrop onMouseDown={() => history.push(parent)}>
+  return <Backdrop onMouseDown={() => history.replace(parent)}>
     <Inner>
       <RecipeCard id={id} expanded />
       TODO comments

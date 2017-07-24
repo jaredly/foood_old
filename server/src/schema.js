@@ -85,6 +85,7 @@ type Recipe {
   yield: Float
   yieldUnit: String
   comments(start: Int, max: Int): [Comment]
+  lists: [List!]!
 }
 
 type Instruction {
@@ -202,6 +203,7 @@ type Mutation {
   addTag(title: String!): Tag!
   addIngredient(name: String!, plural: String, defaultUnit: String, aisle: String): Ingredient!
 
+  addRecipeToLists(recipe: ID!, lists: [ID!]!): [ID!]!
 
   addChannel(name: String!): Channel
   addMessage(message: MessageInput!): Message
