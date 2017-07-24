@@ -110,6 +110,13 @@ query RecipeCardQuery($id: ID!) {
 }
 `
 
+export const RecipeQuery = graphql(recipeCardQuery, {
+  options: ({id}) => ({
+    // pollInterval: 60 * 1000,
+    variables: {id},
+  })
+})(({data, children}) => children({data}))
+
 export default graphql(recipeCardQuery, {
   options: ({id}) => ({
     // pollInterval: 60 * 1000,

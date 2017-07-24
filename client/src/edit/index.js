@@ -6,20 +6,31 @@ import {
 import {
     gql,
     graphql,
+    compose,
 } from 'react-apollo';
 
 import RecipeEditor from '../shared/RecipeEditor'
+import {RecipeQuery} from '../shared/RecipeCard'
+import Modal from '../shared/Modal'
 
 const parseSearch = search => search
   ? search.slice(1).split('&').map(m => m.split('=').map(decodeURIComponent))
     .reduce((obj, [key, val]) => (obj[key] = val, obj), {})
   : {}
 
-const Edit = ({match: {params: {id}}, history}) => {
+const Edit = ({
+  match: {params: {id}, url}, history,
+  location: {search},
+  addRecipeMutation,
+  updateRecipeMutation,
+  addRecipeToLists,
+}) => {
+  const addRecipe = addRecipeMutation
+  const saveRecipe = updateRecipeMutation
   if (id) { // editing
     const parent = url.split('/').slice(0, -2).join('/') || '/'
     const goUp = () => history.replace(parent)
-    return <RecipeQuery id={id}>
+    return <Modal onBack={goUp}><RecipeQuery id={id}>
       {({data: {error, loading, recipe}}) => {
         if (error) return <div>Unable to load the recipe</div>
         if (loading) return <div>Loading...</div>
@@ -30,18 +41,18 @@ const Edit = ({match: {params: {id}}, history}) => {
           onDone={goUp}
         />
       }}
-    </RecipeQuery>
+    </RecipeQuery></Modal>
   } else { // adding
     const parent = url.split('/').slice(0, -1).join('/') || '/'
     const goUp = () => history.replace(parent)
     const target = parseSearch(search).target
-    return <RecipeEditor
+    return <Modal onBack={goUp}><RecipeEditor
       recipe={null}
-      lists={target ? [+target] : []]}
+      lists={target ? [+target] : []}
       action="Create"
       onAction={(data, lists) => addRecipe(data).then(({id}) => addRecipeToLists(id, lists))}
       onDone={goUp}
-    />
+    /></Modal>
   }
 }
 
@@ -93,3 +104,9 @@ mutation addRecipeToLists($id: ID!, $lists: [ID!]!) {
   addRecipeToLists(id: $id, lists: $lists)
 }
 `
+
+export default compose(
+  graphql(addRecipeMutation, {name: 'addRecipeMutation'}),
+  graphql(updateRecipeMutation, {name: 'updateRecipeMutation'}),
+  graphql(addRecipeToLists, {name: 'addRecipeToLists'}),
+)(Edit)

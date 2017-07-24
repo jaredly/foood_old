@@ -140,7 +140,6 @@ input RecipeInput {
   title: String!
   tags: [String!]!
   source: String
-  notes: String
   instructions: [InstructionInput!]!
   ingredients: [RecipeIngredientInput!]!
   # ingredientGroups maybe

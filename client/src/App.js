@@ -9,6 +9,8 @@ import {
 import './App.css';
 import Home from './home';
 import Recipe from './recipe';
+import Edit from './edit'
+
 import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
 import ChannelDetails from './components/ChannelDetails';
@@ -78,10 +80,35 @@ class App extends Component {
               </button>
             </Link>
             <Switch>
-              <Route path="/" component={Home} />
-              <Route component={ NotFound } />
+              {/* <Route path="/person/:id" /> */}
+              <Route path="/list/:id">
+                <div>
+                 {/* <Route path="/" component={List} />  */}
+                  <Route path="/recipe/:id">
+                    <Switch>
+                      <Route path="/" exact component={Recipe}/>
+                      <Route path="/edit" component={Edit}/>
+                    </Switch>
+                  </Route>
+                  <Route path="/add" component={Edit}/>
+                </div>
+              </Route>
+              <Route path="/">
+                <div>
+                  <Home />
+                  {/* <Route path="/recipe/:id" component={Recipe}/>
+                  <Route path="/edit/:id" component={Edit}/>
+                  <Route path="/add" component={Edit}/> */}
+                  <Route path="/recipe/:id">
+                    <Switch>
+                      {/* <Route path="" exact component={Recipe}/>      */}
+                      <Route path="" component={Edit}/>
+                    </Switch>
+                  </Route>
+                  <Route path="/add" component={Edit}/>
+                </div>
+              </Route>
             </Switch>
-            <Route path="/recipe/:id" component={Recipe}/>
           </div>
         </BrowserRouter>
       </ApolloProvider>
