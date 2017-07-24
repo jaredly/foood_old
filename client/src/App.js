@@ -95,14 +95,14 @@ class App extends Component {
               </Route>
               <Route path="/">
                 <div>
-                  <Home />
+                  <Route path="/" component={Home} />
                   {/* <Route path="/recipe/:id" component={Recipe}/>
                   <Route path="/edit/:id" component={Edit}/>
                   <Route path="/add" component={Edit}/> */}
                   <Route path="/recipe/:id">
                     <Switch>
-                      {/* <Route path="" exact component={Recipe}/>      */}
-                      <Route path="" component={Edit}/>
+                      <Route path="/recipe/:id" exact component={Recipe}/>
+                      <Route path="/recipe/:id/edit" component={Edit}/>
                     </Switch>
                   </Route>
                   <Route path="/add" component={Edit}/>

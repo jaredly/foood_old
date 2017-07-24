@@ -185,6 +185,7 @@ export const resolvers = {
       // TODO check auth
       data.recipes[id] = {
         id,
+        ...data.recipes[id],
         ...recipe,
         updated: Date.now(),
         instructions: recipe.instructions.map(addIds),

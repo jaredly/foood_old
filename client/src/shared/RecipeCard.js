@@ -3,12 +3,26 @@ import {
   Link
 } from 'react-router-dom'
 
+import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
 import {
     gql,
     graphql,
 } from 'react-apollo';
+import Edit from 'react-icons/lib/io/edit';
 
-const RecipeCard = ({expanded, data: {recipe, error, loading}}) => {
+const TopButton = glamorous.div({
+  cursor: 'pointer',
+  backgroundColor: 'transparent',
+  border: 'none',
+  padding: 0,
+  // padding: 8,
+  ':hover': {
+    backgroundColor: '#eee',
+  }
+})
+
+
+const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
   if (error) return <div>{error}</div>
   if (loading) return <div>loading</div>
 
@@ -45,6 +59,12 @@ const RecipeCard = ({expanded, data: {recipe, error, loading}}) => {
       }}>
         by {name}
       </div>
+      <div style={{flex: 1}}/>
+      {expanded && <Link to={id + "/edit"}>
+      <TopButton >
+      <Edit size={20}/>
+      </TopButton>
+      </Link>}
     </div>
     <div style={{
       padding: 5,
@@ -91,7 +111,7 @@ query RecipeCardQuery($id: ID!) {
     updated
     yield
     yieldUnit
-    tags {name}
+    tags {id, name}
     source
     cookTime
     prepTime

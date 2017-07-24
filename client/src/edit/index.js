@@ -35,9 +35,13 @@ const Edit = ({
         if (error) return <div>Unable to load the recipe</div>
         if (loading) return <div>Loading...</div>
         return <RecipeEditor
-          recipe={recipe}
+          recipe={stripRecipe(recipe)}
           action="Save"
-          onAction={(data, lists) => saveRecipe(id, data).then(({id}) => addRecipeToLists(id, lists))}
+          onAction={(recipe, lists) => {
+            saveRecipe({variables: {id, recipe}})
+            .then(res => console.log('res', res))
+            // .then(({id}) => addRecipeToLists(id, lists))
+          }}
           onDone={goUp}
         />
       }}
@@ -56,45 +60,33 @@ const Edit = ({
   }
 }
 
-const inputTypes = `
-input InstructionInput {
-  text: String
-  ingredientsUsed: [String!]!
-}
-
-input RecipeIngredientInput {
-  ingredient: String! # id
-  amount: Float!
-  unit: String
-  comments: String
-}
-
-input RecipeInput {
-  title: String!
-  tags: [String!]!
-  source: String
-  notes: String
-  instructions: [InstructionInput!]!
-  ingredients: [RecipeIngredientInput!]!
-  # ingredientGroups maybe
-  description: String!
-  cookTime: Int
-  prepTime: Int
-  totalTime: Int
-  ovenTemp: Int
-}
-`
+const stripRecipe = ({title, tags, source, description, cookTime, prepTime, totalTime, ovemTemp, instructions, ingredients}) => ({
+  title,
+  tags: tags.map(tag => tag.id),
+  source,
+  description,
+  cookTime,
+  prepTime,
+  totalTime,
+  ingredients: ingredients.map(({id, ingredient, amount, unit, comments}) => ({
+    id,
+    ingredient, amount, unit, comments,
+  })),
+  instructions: instructions.map(({id, text, ingredientsUsed}) => ({
+    id,
+    text,
+    ingredientsUsed: ingredientsUsed || [],
+  })),
+})
 
 export const addRecipeMutation = gql`
-${inputTypes}
-mutation AddRecipeMutation($recipe: RecipeInput) {
+mutation AddRecipeMutation($recipe: RecipeInput!) {
   addRecipe(recipe: $recipe) { id }
 }
 `
 
 export const updateRecipeMutation = gql`
-${inputTypes}
-mutation UpdateRecipeMutation($id: ID!, $recipe: RecipeInput) {
+mutation UpdateRecipeMutation($id: ID!, $recipe: RecipeInput!) {
   updateRecipe(id: $id, recipe: $recipe) { id }
 }
 `

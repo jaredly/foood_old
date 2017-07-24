@@ -10,7 +10,7 @@ import {
 
 import RecipeCard from './RecipeCard'
 
-const List = ({id, data: {list, loading, error}}) => {
+const List = ({onEditRecipe, id, data: {list, loading, error}}) => {
   if (error) return <div style={{
     whiteSpace: 'pre',
     fontFamily: 'monospace',
@@ -43,6 +43,7 @@ const List = ({id, data: {list, loading, error}}) => {
         >
         <RecipeCard
           id={r.id}
+          onEdit={() => onEditRecipe(r.id)}
         />
         </Link>
       ))}

@@ -125,11 +125,13 @@ type Ingredient {
 }
 
 input InstructionInput {
+  id: ID
   text: String
   ingredientsUsed: [String!]!
 }
 
 input RecipeIngredientInput {
+  id: ID
   ingredient: String! # id
   amount: Float!
   unit: String

@@ -11,7 +11,7 @@ import {
 
 import List from '../shared/List'
 
-const Home = ({data: {home, loading, error}}) => {
+const Home = ({history, data: {home, loading, error}}) => {
   if (error) return <div>{error} error</div>
   if (loading) return <div>loading</div>
   return <div style={{
@@ -26,6 +26,7 @@ const Home = ({data: {home, loading, error}}) => {
         }}>
         <List 
           id={l.id}  
+          onEditRecipe={id => history.push(`/recipe/${id}/edit`)}
         />
         </div>
       ))}

@@ -66,14 +66,10 @@ export default class Form extends Component {
       checked: this.state.data[name] == null ? default_ : this.state.data[name],
       onChange: e => this.setValue(name, e.target.checked),
     }),
-    toggle: name => this.setState(({data}) => ({
-      data: {...data, [name]: !data[name]}
+    toggle: (name, default_=false) => this.setState(({data}) => ({
+      data: {...data, [name]: !(data[name] == null ? default_ : data[name])}
     })),
     set: this.setValue,
-    submitButton: () => ({
-      disabled: false, // TODO validation?
-      onClick: this.submit,
-    }),
     list: ({name, container, item}) => {
       const items = this.state.data[name] || []
       const outerName = name
