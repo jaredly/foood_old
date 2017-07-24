@@ -43,25 +43,22 @@ export default class Form extends Component {
   }
 
   submit = () => {
-    // TODO data validation?
-    // wonder if I can get away with not having a schema...
-    // hmmm
     this.props.onSubmit(this.state.data)
   }
 
   functions = {
-    text: (name, default_='', optional=false) => ({
+    text: (name, default_='') => ({
       value: this.state.data[name] || default_,
       onChange: e => this.setValue(name, e.target.value),
       // onChangeText: value => this.setValue(name, value),
       type: 'text',
     }),
-    float: (name, default_=null, optional=false) => ({
+    float: (name, default_=null) => ({
       value: this.state.data[name] == null ? default_ : this.state.data[name],
       onChange: e => this.setValue(name, e.target.value),
       type: 'number',
     }),
-    custom: (name, default_=null, optional=false) => ({
+    custom: (name, default_=null) => ({
       value: this.state.data[name] == null ? default_ : this.state.data[name],
       onChange: value => this.setValue(name, value),
     }),
@@ -83,17 +80,17 @@ export default class Form extends Component {
       return container({
         add: () => null, // TODO
         children: items.concat([null]).map((data, i) => item({
-          text: (name, default_='', optional=false) => ({
+          text: (name, default_='') => ({
             value: data && data[name] || default_,
             onChange: e => this.setListValue(outerName, i, name, e.target.value),
             // onChangeText: value => this.setListValue(outerName, i, name, value),
             type: 'text',
           }),
-          custom: (name, default_=null, optional=false) => ({
+          custom: (name, default_=null) => ({
             value: (!data || data[name] == null) ? default_ : data[name],
             onChange: value => this.setListValue(outerName, i, name, value),
           }),
-          float: (name, default_=null, optional=false) => ({
+          float: (name, default_=null) => ({
             value: (!data || data[name] == null) ? default_ : data[name],
             onChange: e => this.setListValue(outerName, i, name, e.target.value),
             type: 'number',

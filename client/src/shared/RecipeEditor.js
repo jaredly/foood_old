@@ -48,7 +48,11 @@ const Dropdown = ({value, onChange, placeholder, options}) => {
   </select>
 }
 
-const Row = div({flexDirection: 'row'})
+const Row = div({flexDirection: 'row', alignItems: 'center'})
+
+const Label = div({fontSize: 12, marginBottom: 5, marginTop: 15})
+
+const Spring = div({flex: 1})
 
 const RecipeEditor = ({recipe, onAction, action}) => {
   // text: (name, default='', optional=false) => props
@@ -59,68 +63,97 @@ const RecipeEditor = ({recipe, onAction, action}) => {
   // If onsubmit returns a promise that fails, then that error is displayed
   return <Form initial={recipe} onSubmit={onAction}>
     {({text, float, bool, list, submitButton, toggle}, data, errors) => (
-      <div>
-        <input {...text('title')} placeholder="Title" />
-        <input {...text('source')} placeholder="Source" />
-        <Row onClick={() => toggle('isPublic')}>
-          <input type="checkbox" {...bool('isPublic', true)} />
-          is public
-        </Row>
-        Description
-        <textarea {...text('description')} />
-        {list({
-          name: 'ingredients',
-          container: ({children, add}) => <glamorous.Ol
-            children={children}
-            css={{
-              margin: 0,
-              padding: 0,
-            }}
-          />,
-          // I think I'll just always have a "null" item at the end
-          // {children}
-          // <li>
-          //   <button onClick={add}>Add</button>
-          // </li>
-          // </ol>,
-          item: ({text, float, custom, remove}, data, i) => (
-            // TODO good tab handling. I'd love to make it so that
-            // if you tab from the end of the last one, it will add a new
-            // item to the list I think.
-            // but if you tab out and its empty, you move onto the next thing.
-            <glamorous.Li key={i} css={[
-              {padding: 10, margin: 0},
-              data === null && {
-                backgroundColor: '#eee',
-                fontStyle: 'italic',
-              }
-            ]}>
-              <Input {...float('amount', 1)} placeholder="Amount" css={{
-                width: 30,
-                backgroundColor: 'transparent',
-                fontStyle: 'inherit',
-                border: 'none',
-              }} />
-              {/* TODO defaultunit? */}
-              <Input {...text('unit')} placeholder="Unit" css={{
-                width: 50,
-                backgroundColor: 'transparent',
-                fontStyle: 'inherit',
-                border: 'none',
-              }} />
-              <Dropdown
-                {...custom('ingredient')}
-                placeholder="Ingredient"
-                options={ingredients}
-              />
-              {data && <button onClick={remove}>&times;</button>}
-            </glamorous.Li>
-          )
-        })}
-        {errors.map(error => <div>{error}</div>)}
-        {/* disables while loading, incomplete, etc. */}
-        <button {...submitButton()}>{action}</button>
-      </div>
+      <Div css={{padding: 10}}>
+        <Div >
+          <Input {...text('title')} placeholder="Title" css={{
+            fontSize: 20,
+            fontWeight: 'bold',
+            border: 'none',
+            borderBottom: '1px solid #aaa',
+            marginBottom: 5,
+          }} />
+          <Row css={{fontSize: 10}}>
+            <Row css={{fontSize: 10, marginRight: 20}} onClick={() => toggle('isPublic')}>
+              <input type="checkbox" {...bool('isPublic', true)} />
+              is public
+            </Row>
+            Source
+            <Input css={{
+              marginLeft: 5,
+              fontSize: 12,
+              border: 'none',
+              flex: 1,
+            }} {...text('source')} placeholder="(url or text)" />
+          </Row>
+        </Div>
+        <Div >
+          <Label>Description</Label>
+          <Textarea css={{
+            fontSize: 10,
+            fontStyle: 'italic',
+            border: '1px solid #ddd',
+            padding: 10,
+          }} {...text('description')} />
+          <Label>Ingredients</Label>
+          {list({
+            name: 'ingredients',
+            container: ({children, add}) => <Div
+              children={children}
+              css={{
+                margin: 0,
+                padding: 0,
+                fontSize: 10,
+              }}
+            />,
+            item: ({text, float, custom, remove}, data, i) => (
+              // TODO good tab handling. I'd love to make it so that
+              // if you tab from the end of the last one, it will add a new
+              // item to the list I think.
+              // but if you tab out and its empty, you move onto the next thing.
+              <Row key={i} css={[
+                {padding: '5px 10px', margin: 0, lineHeight: 0},
+                data === null && {
+                   // backgroundColor: '#fafafa', 
+                  color: '#888',
+                  fontStyle: 'italic',
+                }
+              ]}>
+                <Div css={{
+                  marginRight: 5,
+                  width: 10,
+                }}>
+                  {data ? i + 1 + '.' : ''}
+                </Div>
+                <Input {...float('amount', 1)} placeholder="Amount" css={{
+                  width: 30,
+                  backgroundColor: 'transparent',
+                  color: 'currentColor',
+                  textAlign: 'right',
+                  fontStyle: 'inherit',
+                  border: 'none',
+                }} />
+                {/* TODO defaultunit? */}
+                <Input {...text('unit')} placeholder="Unit" css={{
+                  width: 50,
+                  backgroundColor: 'transparent',
+                  fontStyle: 'inherit',
+                  border: 'none',
+                }} />
+                <Dropdown
+                  {...custom('ingredient')}
+                  placeholder="Ingredient"
+                  options={ingredients}
+                />
+                <Spring/>
+                {data && <button onClick={remove}>&times;</button>}
+              </Row>
+            )
+          })}
+          {errors.map(error => <div>{error}</div>)}
+          {/* disables while loading, incomplete, etc. */}
+          <button {...submitButton()}>{action}</button>
+        </Div>
+      </Div>
     )}
   </Form>
 }
