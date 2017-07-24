@@ -40,11 +40,11 @@ const ingredients = [{
 // w/ a good null state
 
 const Dropdown = ({value, onChange, placeholder, options}) => {
-  return <select style={{flex: 1}} value={value} onChange={e => {
+  return <select style={{flex: 1}} value={value || ''} onChange={e => {
     onChange(e.target.value)    
   }}>
-    <glamorous.Option css={{fontStyle: 'italic', color: '#aaa'}} value="">{placeholder}</glamorous.Option>
-    {options.map(({id, name}) => <option key={id} value={id}>{name}</option>)}
+    <glamorous.Option disabled css={{fontStyle: 'italic', color: '#aaa'}} value="">{placeholder}</glamorous.Option>
+    {options.map(({id, name, plural}) => <option key={id} value={id}>{plural || name}</option>)}
   </select>
 }
 
@@ -80,6 +80,7 @@ const Description = glamorous.textarea({
   fontStyle: 'italic',
   border: '1px solid #ddd',
   padding: 10,
+  flexShrink: 0,
 })
 
 const Title = glamorous.input({
@@ -87,7 +88,7 @@ const Title = glamorous.input({
   fontWeight: 'bold',
   border: 'none',
   flex: 1,
-  padding: 10,
+  padding: '10px 20px',
   backgroundColor: 'transparent',
 })
 
@@ -97,31 +98,37 @@ const validate = ({title, ingredients, instructions}) => {
   if (!instructions.length) return 'Must have at least one instruction'
 }
 
-const RecipeEditor = ({recipe, onAction, action}) => {
+const RecipeEditor = ({recipe, onAction, action, onDone}) => {
   return <Form initial={recipe} onSubmit={onAction}>
-    {({text, float, bool, list, toggle, set}, data) => (
-      <Div>
+    {({text, float, bool, list, toggle, set}, data, isModified) => (
+      <Div css={{flex: 1}}>
         <Row css={{
             borderBottom: '1px solid #aaa',
             marginBottom: 5,
         }}>
           <Title {...text('title')} placeholder="Title" />
           <TopButton onClick={() => {
+            if (!isModified) return onDone()
             const error = validate(data)
             if (error) {
               set('error', error)
             } else {
               set('error', null)
+              set('loading', true)
               onAction(data)
+              .then(
+                () => set('loading', false),
+                err => (set('loading', false), set('error', err + ''))
+              )
             }
           }}>
             <Checkmark color="green" size={50} />
           </TopButton>
-          <TopButton>
+          <TopButton onClick={onDone}>
             <Close size={50} color="gray" />
           </TopButton>
         </Row>
-        <Div css={{padding: 10}}>
+        <Div css={{padding: '10px 20px', flex: 1, overflow: 'auto'}}>
           {data.error}
           <Row css={{fontSize: 10}}>
             <Row
@@ -148,6 +155,7 @@ const RecipeEditor = ({recipe, onAction, action}) => {
 
 const ingredientsList = {
   name: 'ingredients',
+  blank: () => ({amount: 1, ingredient: null, unit: ''}),
   container: ({children, add}) => <Div
     children={children}
     css={{
@@ -179,7 +187,8 @@ const ingredientsList = {
         placeholder="Ingredient"
         options={ingredients}
       />
-      <Strut size={12} />
+      <Strut size={10} />
+      <IngredientCommentsInput {...text('comments')} placeholder="Comments" />
       {data 
         ? <RowDeleteButton onClick={remove}>
             <Close size={20} />
@@ -191,6 +200,7 @@ const ingredientsList = {
 
 const instructionsList = {
   name: 'instructions',
+  blank: () => ({text: '', ingredientsUsed: []}),
   container: ({children, add}) => <Div
     children={children}
     css={{
@@ -226,11 +236,21 @@ const instructionsList = {
 }
 
 const AmountInput = glamorous.input({
-  width: 30,
+  width: 40,
   fontSize: 14,
   backgroundColor: 'transparent',
   color: 'currentColor',
   textAlign: 'right',
+  fontStyle: 'inherit',
+  border: 'none',
+})
+
+const IngredientCommentsInput = glamorous.input({
+  width: 70,
+  fontSize: 10,
+  backgroundColor: 'transparent',
+  color: 'currentColor',
+  padding: 5,
   fontStyle: 'inherit',
   border: 'none',
 })

@@ -28,7 +28,7 @@ const Edit = ({
   const addRecipe = addRecipeMutation
   const saveRecipe = updateRecipeMutation
   if (id) { // editing
-    const parent = url.split('/').slice(0, -2).join('/') || '/'
+    const parent = url.split('/').slice(0, -1).join('/') || '/'
     const goUp = () => history.replace(parent)
     return <Modal onBack={goUp}><RecipeQuery id={id}>
       {({data: {error, loading, recipe}}) => {
@@ -38,11 +38,15 @@ const Edit = ({
           recipe={stripRecipe(recipe)}
           action="Save"
           onAction={({error, ...recipe}, lists) => {
-            saveRecipe({
+            return saveRecipe({
               variables: {id, recipe},
             })
-            .then(res => console.log('res', res))
-            // .then(({id}) => addRecipeToLists(id, lists))
+            .then(({data: {updateRecipe: {id}}}) => {
+              if (lists && lists.length) {
+                return addRecipeToLists(id, lists)
+              }
+            })
+            .then(goUp)
           }}
           onDone={goUp}
         />
@@ -56,7 +60,13 @@ const Edit = ({
       recipe={null}
       lists={target ? [+target] : []}
       action="Create"
-      onAction={(data, lists) => addRecipe(data).then(({id}) => addRecipeToLists(id, lists))}
+      onAction={(recipe, lists) =>
+        addRecipe({variables: {recipe}})
+        .then(lists && lists.length
+          ? ({data: {addRecipe: {id}}}) => addRecipeToLists(id, lists)
+          : () => {})
+        .then(goUp)
+      }
       onDone={goUp}
     /></Modal>
   }

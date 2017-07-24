@@ -17,11 +17,12 @@ const Home = ({history, data: {home, loading, error}}) => {
   return <div style={{
     backgroundColor: 'white',
     flexDirection: 'row',
+    alignItems: 'stretch',
     overflowX: 'auto',
   }}>
       {home.homepageLists.map(l => (
         <div key={l.id} style={{
-          padding: 20,
+          padding: 20, 
           width: 400,
         }}>
         <List 

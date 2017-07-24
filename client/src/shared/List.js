@@ -24,11 +24,12 @@ const List = ({onEditRecipe, id, data: {list, loading, error}}) => {
   return <div style={{
     boxShadow: '0 0 3px #aaa',
     borderRadius: 3,
+    flex: 1,
   }}>
     <div style={{padding: 10, borderBottom: '1px solid #aaa'}}>
       {title} (updated {new Date(updated).toLocaleDateString()})
     </div>
-    <div>
+    <div style={{flex: 1, overflow: 'auto'}}>
       {recipes.map(r => (
         <Link
           to={"/recipe/" + r.id}

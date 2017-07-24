@@ -25,11 +25,11 @@ export default class Form extends Component {
     })
   }
 
-  setListValue = (outer, i, name, value) => {
+  setListValue = (outer, i, name, value, blank) => {
     this.setState(({data}) => {
       const list = data[outer] ? data[outer].slice() : []
       while (list.length <= i) list.push(null)
-      list[i] = {...list[i], [name]: value}
+      list[i] = {...(list[i] || (blank && blank())), [name]: value}
       return {data: {...data, [outer]: list}}
     })
   }
@@ -70,7 +70,7 @@ export default class Form extends Component {
       data: {...data, [name]: !(data[name] == null ? default_ : data[name])}
     })),
     set: this.setValue,
-    list: ({name, container, item}) => {
+    list: ({name, container, item, blank}) => {
       const items = this.state.data[name] || []
       const outerName = name
       return container({
@@ -78,17 +78,17 @@ export default class Form extends Component {
         children: items.concat([null]).map((data, i) => item({
           text: (name, default_='') => ({
             value: data && data[name] || default_,
-            onChange: e => this.setListValue(outerName, i, name, e.target.value),
+            onChange: e => this.setListValue(outerName, i, name, e.target.value, blank),
             // onChangeText: value => this.setListValue(outerName, i, name, value),
             type: 'text',
           }),
           custom: (name, default_=null) => ({
             value: (!data || data[name] == null) ? default_ : data[name],
-            onChange: value => this.setListValue(outerName, i, name, value),
+            onChange: value => this.setListValue(outerName, i, name, value, blank),
           }),
           float: (name, default_=null) => ({
             value: (!data || data[name] == null) ? default_ : data[name],
-            onChange: e => this.setListValue(outerName, i, name, e.target.value),
+            onChange: e => this.setListValue(outerName, i, name, e.target.value, blank),
             type: 'number',
           }),
           remove: () => this.removeListItem(outerName, i),
