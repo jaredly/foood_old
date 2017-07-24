@@ -100,32 +100,39 @@ const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
 // maybe it would though. but you could "clear out" super easy
 // Also it would be browser-local, prolly localStorage
 
+export const recipeCardFragment = gql`
+fragment RecipeCardFragment on Recipe {
+  id
+  title
+  description
+  author {name}
+  created
+  updated
+  yield
+  yieldUnit
+  tags {id, name}
+  source
+  cookTime
+  prepTime
+  totalTime
+  instructions {
+    text
+    ingredientsUsed { id }
+  }
+  ingredients {
+    amount
+    unit
+    comments
+    ingredient {id, name, plural}
+  }
+}
+`
+
 export const recipeCardQuery = gql`
+${recipeCardFragment}
 query RecipeCardQuery($id: ID!) {
   recipe(id: $id) {
-    id
-    title
-    description
-    author {name}
-    created
-    updated
-    yield
-    yieldUnit
-    tags {id, name}
-    source
-    cookTime
-    prepTime
-    totalTime
-    instructions {
-      text
-      ingredientsUsed { id }
-    }
-    ingredients {
-      amount
-      unit
-      comments
-      ingredient {id, name, plural}
-    }
+    ...RecipeCardFragment
   }
 }
 `

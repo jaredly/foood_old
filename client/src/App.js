@@ -56,6 +56,9 @@ const client = new ApolloClient({
       channel: (_, args) => {
         return toIdValue(dataIdFromObject({ __typename: 'Channel', id: args['id'] }))
       },
+      recipe: (_, args) => {
+        return toIdValue(dataIdFromObject({ __typename: 'Recipe', id: args['id'] }))
+      },
     },
   },
   dataIdFromObject,

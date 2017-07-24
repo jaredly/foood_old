@@ -10,7 +10,7 @@ import {
 } from 'react-apollo';
 
 import RecipeEditor from '../shared/RecipeEditor'
-import {RecipeQuery} from '../shared/RecipeCard'
+import {RecipeQuery, recipeCardFragment} from '../shared/RecipeCard'
 import Modal from '../shared/Modal'
 
 const parseSearch = search => search
@@ -37,8 +37,10 @@ const Edit = ({
         return <RecipeEditor
           recipe={stripRecipe(recipe)}
           action="Save"
-          onAction={(recipe, lists) => {
-            saveRecipe({variables: {id, recipe}})
+          onAction={({error, ...recipe}, lists) => {
+            saveRecipe({
+              variables: {id, recipe},
+            })
             .then(res => console.log('res', res))
             // .then(({id}) => addRecipeToLists(id, lists))
           }}
@@ -80,14 +82,20 @@ const stripRecipe = ({title, tags, source, description, cookTime, prepTime, tota
 })
 
 export const addRecipeMutation = gql`
+${recipeCardFragment}
 mutation AddRecipeMutation($recipe: RecipeInput!) {
-  addRecipe(recipe: $recipe) { id }
+  addRecipe(recipe: $recipe) {
+    ...RecipeCardFragment
+  }
 }
 `
 
 export const updateRecipeMutation = gql`
+${recipeCardFragment}
 mutation UpdateRecipeMutation($id: ID!, $recipe: RecipeInput!) {
-  updateRecipe(id: $id, recipe: $recipe) { id }
+  updateRecipe(id: $id, recipe: $recipe) {
+    ...RecipeCardFragment
+  }
 }
 `
 
