@@ -40,10 +40,8 @@ const ingredients = [{
 // w/ a good null state
 
 const Dropdown = ({value, onChange, placeholder, options}) => {
-  return <select style={{flex: 1}} value={value ? value.id : null} onChange={e => {
-    let found = null;
-    options.some(option => option.id === e.target.value ? (found = option) : false)
-    if (found) onChange(found)
+  return <select style={{flex: 1}} value={value} onChange={e => {
+    onChange(e.target.value)    
   }}>
     <glamorous.Option css={{fontStyle: 'italic', color: '#aaa'}} value="">{placeholder}</glamorous.Option>
     {options.map(({id, name}) => <option key={id} value={id}>{name}</option>)}

@@ -70,7 +70,7 @@ const stripRecipe = ({title, tags, source, description, cookTime, prepTime, tota
   totalTime,
   ingredients: ingredients.map(({id, ingredient, amount, unit, comments}) => ({
     id,
-    ingredient, amount, unit, comments,
+    ingredient: ingredient.id, amount, unit, comments,
   })),
   instructions: instructions.map(({id, text, ingredientsUsed}) => ({
     id,

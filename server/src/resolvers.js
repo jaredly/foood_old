@@ -129,7 +129,7 @@ const getsByAttr = (type, attr) => obj => {
 
 const uuid = () => Math.random().toString(16).slice(2)
 
-const addIds = item => ({...item, id: uuid()})
+const addIds = item => item.id ? item : ({...item, id: uuid()})
 
 export const resolvers = {
   Query: {
@@ -191,6 +191,8 @@ export const resolvers = {
         instructions: recipe.instructions.map(addIds),
         ingredients: recipe.ingredients.map(addIds),
       }
+      // console.log('recipe updated')
+      // console.log(JSON.stringify(data.recipes[id], null, 2))
       return data.recipes[id]
     },
 
