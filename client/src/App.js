@@ -5,11 +5,13 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
+import glamorous from 'glamorous'
 
 import './App.css';
 import Home from './home';
 import Recipe from './recipe';
 import Edit from './edit'
+import Recipes from './recipes'
 
 import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
@@ -64,6 +66,19 @@ const client = new ApolloClient({
   dataIdFromObject,
 });
 
+const NavBar = glamorous.div({
+  padding: '10px 30px',
+  fontSize: 10,
+  color: 'white',
+  backgroundColor: '#333',
+  textAlign: 'left',
+  flexDirection: 'row',
+  fontWeight: 200,
+  fontSize: 20,
+  lineHeight: '30px',
+  alignItems: 'center',
+})
+
 class App extends Component {
   // TODO handle auth
   // TODO I want the home page to look gated, but allow people to
@@ -73,17 +88,24 @@ class App extends Component {
       <ApolloProvider client={client}>
         <BrowserRouter>
           <div className="App">
-            <Link to="/" className="navbar">
-              Foood
+            <NavBar>
+              <Link to="/">
+                Home
+              </Link>
+              <div style={{flexBasis: 20}} />
+              <Link to="/recipes/">
+                My Recipes
+              </Link>
+              <div style={{flexBasis: 20}} />
+              <Link to="/lists/">
+                My Lists
+              </Link>
+              <div style={{flex: 1}} />
               <input
                 placeholder="Search"
               />
-              <button>
-                Add recipe
-              </button>
-            </Link>
+            </NavBar>
             <Switch>
-              {/* <Route path="/person/:id" /> */}
               <Route path="/list/:id">
                 <div>
                  {/* <Route path="/" component={List} />  */}
@@ -94,6 +116,18 @@ class App extends Component {
                     </Switch>
                   </Route>
                   <Route path="/add" component={Edit}/>
+                </div>
+              </Route>
+              <Route path="/recipes/">
+                <div>
+                  <Route path="/recipes/" component={Recipes} />
+                  <Route path="/recipes/:id">
+                    <Switch>
+                      <Route path="/recipes/:id" exact render={props => <Recipe {...props} parent="/recipes" />}/>
+                      <Route path="/recipes/:id/edit" component={Edit}/>
+                    </Switch>
+                  </Route>
+                  <Route path="/recipes/add" component={Edit}/>
                 </div>
               </Route>
               <Route path="/">

@@ -7,6 +7,7 @@ import {
     gql,
     graphql,
 } from 'react-apollo';
+import Plus from 'react-icons/lib/io/ios-plus-empty'
 
 import RecipeCard from './RecipeCard'
 
@@ -26,8 +27,12 @@ const List = ({onEditRecipe, id, data: {list, loading, error}}) => {
     borderRadius: 3,
     flex: 1,
   }}>
-    <div style={{padding: 10, borderBottom: '1px solid #aaa'}}>
+    <div style={{padding: 10, flexDirection: 'row', borderBottom: '1px solid #aaa'}}>
       {title} (updated {new Date(updated).toLocaleDateString()})
+      <div style={{flex: 1}}/>
+      <Link to={"add?target=" + id}>
+      <Plus/>
+      </Link>
     </div>
     <div style={{flex: 1, overflow: 'auto'}}>
       {recipes.map(r => (

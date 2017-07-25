@@ -37,7 +37,7 @@ const Edit = ({
         return <RecipeEditor
           recipe={stripRecipe(recipe)}
           action="Save"
-          onAction={({error, ...recipe}, lists) => {
+          onAction={({error, loading, ...recipe}, lists) => {
             return saveRecipe({
               variables: {id, recipe},
             })
@@ -60,10 +60,17 @@ const Edit = ({
       recipe={null}
       lists={target ? [+target] : []}
       action="Create"
-      onAction={(recipe, lists) =>
-        addRecipe({variables: {recipe}})
-        .then(lists && lists.length
-          ? ({data: {addRecipe: {id}}}) => addRecipeToLists(id, lists)
+      onAction={({error, loading, ...recipe}, lists) =>
+        addRecipe({variables: {
+          recipe: {
+            ...recipe,
+            tags: [],
+          }
+        }})
+        .then(// lists && lists.length
+        // TODO support custom list additions
+          target
+          ? ({data: {addRecipe: {id}}}) => addRecipeToLists(id, [target])
           : () => {})
         .then(goUp)
       }

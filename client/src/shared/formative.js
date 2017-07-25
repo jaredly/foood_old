@@ -4,7 +4,7 @@ import React, {Component} from 'react'
 export default class Form extends Component {
   constructor({initial}) {
     super()
-    this.state = {data: initial || {}, errors: []}
+    this.state = {data: initial || {}, changed: false}
     // Hmmm so I could do a "test" render up here & collect fields n stuff
   }
 
@@ -12,7 +12,7 @@ export default class Form extends Component {
     this.setState(({data}) => ({data: {
       ...data,
       [name]: value,
-    }}))
+    }, changed: true}))
   }
 
   setNestedValue = (path, value) => {
@@ -21,7 +21,7 @@ export default class Form extends Component {
       const top = {...data}
       const parent = path.reduce((obj, name) => (obj[name] = {...obj[name]}), top)
       parent[last] = value
-      return {data: top}
+      return {data: top, changed: true}
     })
   }
 
@@ -30,7 +30,7 @@ export default class Form extends Component {
       const list = data[outer] ? data[outer].slice() : []
       while (list.length <= i) list.push(null)
       list[i] = {...(list[i] || (blank && blank())), [name]: value}
-      return {data: {...data, [outer]: list}}
+      return {data: {...data, [outer]: list}, changed: true}
     })
   }
 
@@ -38,12 +38,8 @@ export default class Form extends Component {
     this.setState(({data}) => {
       const list = data[outer] ? data[outer].slice() : []
       list.splice(i, 1)
-      return {data: {...data, [outer]: list}}
+      return {data: {...data, [outer]: list}, changed: true}
     })
-  }
-
-  submit = () => {
-    this.props.onSubmit(this.state.data)
   }
 
   functions = {
@@ -67,7 +63,7 @@ export default class Form extends Component {
       onChange: e => this.setValue(name, e.target.checked),
     }),
     toggle: (name, default_=false) => this.setState(({data}) => ({
-      data: {...data, [name]: !(data[name] == null ? default_ : data[name])}
+      data: {...data, [name]: !(data[name] == null ? default_ : data[name])}, changed: true
     })),
     set: this.setValue,
     list: ({name, container, item, blank}) => {
@@ -98,6 +94,6 @@ export default class Form extends Component {
   }
 
   render() {
-    return this.props.children(this.functions, this.state.data, this.state.errors)
+    return this.props.children(this.functions, this.state.data, this.state.changed)
   }
 }
