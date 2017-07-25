@@ -30,7 +30,7 @@ const List = ({onEditRecipe, id, data: {list, loading, error}}) => {
     <div style={{padding: 10, flexDirection: 'row', borderBottom: '1px solid #aaa'}}>
       {title} (updated {new Date(updated).toLocaleDateString()})
       <div style={{flex: 1}}/>
-      <Link to={"add?target=" + id}>
+      <Link to={{pathname: "/add", search: `?target=${id}`, state: {modal: true}}}>
       <Plus/>
       </Link>
     </div>
@@ -46,10 +46,10 @@ const List = ({onEditRecipe, id, data: {list, loading, error}}) => {
           }}
           key={r.id}
         >
-        <RecipeCard
-          id={r.id}
-          onEdit={() => onEditRecipe(r.id)}
-        />
+          <RecipeCard
+            id={r.id}
+            onEdit={() => onEditRecipe(r.id)}
+          />
         </Link>
       ))}
     </div>

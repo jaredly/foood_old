@@ -21,8 +21,7 @@ const Recipes = ({history, data: {home, loading, error}}) => {
   }}>
       {home.user.recipes.map(r => (
         <Link
-          to={"/recipes/" + r.id}
-          replace
+          to={{pathname: "/recipe/" + r.id, state: {modal: true}}}
           style={{
             width: 300,
             margin: 10,
@@ -32,10 +31,7 @@ const Recipes = ({history, data: {home, loading, error}}) => {
           }}
           key={r.id}
         >
-          <RecipeCard
-            id={r.id}
-            onEdit={() => history.push(`/recipes/${r.id}/edit`)}
-          />
+          <RecipeCard id={r.id} />
         </Link>
       ))}
     </div>

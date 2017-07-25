@@ -196,7 +196,8 @@ export const resolvers = {
       return data.recipes[id]
     },
 
-    addRecipeToLists: (_, {id, lists}, {currentUser}) => {
+    addRecipeToLists: (_, {recipe: id, lists}, {currentUser}) => {
+      console.log('adding', id, lists)
       // TODO check auth
       return lists.map(lid => 
         data.lists[lid].recipes.includes(id)

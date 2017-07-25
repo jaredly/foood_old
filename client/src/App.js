@@ -13,6 +13,7 @@ import Recipe from './recipe';
 import Edit from './edit'
 import Recipes from './recipes'
 import Modal from './shared/Modal'
+import AddRecipe from './shared/AddRecipe'
 
 import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
@@ -62,6 +63,9 @@ const client = new ApolloClient({
       recipe: (_, args) => {
         return toIdValue(dataIdFromObject({ __typename: 'Recipe', id: args['id'] }))
       },
+      list: (_, args) => {
+        return toIdValue(dataIdFromObject({ __typename: 'List', id: args['id'] }))
+      },
     },
   },
   dataIdFromObject,
@@ -109,8 +113,8 @@ class Body extends Component {
   componentWillUpdate(nextProps) {
     const {location} = this.props
     if (
-      nextProps.history.action !== 'POP' &&
-      (!location.state || !location.state.modal)
+      nextProps.history.action !== 'POP'
+      && (!location.state || !location.state.modal)
     ) {
       this.lastLocation = location
     }
@@ -129,11 +133,13 @@ class Body extends Component {
         <Route exact path="/" component={Home} />
         <Route exact path="/recipes/" component={Recipes} />
         <Route path="/recipe/:id" component={Recipe} />
+        <Route path="/add" component={AddRecipe} />
       </Switch>
       {isModal &&
-      // <Switch>
+      <Switch>
+        <Route path="/add" render={props => <Modal onBack={props.history.goBack}><AddRecipe {...props} /></Modal>} />
         <Route path="/recipe/:id" render={props => <Modal onBack={props.history.goBack}><Recipe {...props} /></Modal>} />
-      // </Switch>
+      </Switch>
       }
     </div>
   }

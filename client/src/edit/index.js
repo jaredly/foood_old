@@ -73,6 +73,7 @@ const Edit = ({
           target
           ? ({data: {addRecipe: {id}}}) => addRecipeToLists({variables: {recipe: id, lists: [target]}})
           : () => {})
+        .then(data => console.log('lists', data))
         .then(goUp)
       }
       onDone={goUp}

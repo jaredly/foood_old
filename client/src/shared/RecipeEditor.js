@@ -94,14 +94,14 @@ const Title = glamorous.input({
 
 const validate = ({title, ingredients, instructions}) => {
   if (!title) return 'Title is required'
-  if (!ingredients.length) return 'Must have at least one ingredient'
-  if (!instructions.length) return 'Must have at least one instruction'
+  // if (!ingredients.length) return 'Must have at least one ingredient'
+  // if (!instructions.length) return 'Must have at least one instruction'
 }
 
 const RecipeEditor = ({recipe, onAction, action, onDone}) => {
   return <Form initial={recipe} onSubmit={onAction}>
     {({text, float, bool, list, toggle, set}, data, isModified) => (
-      <Div css={{flex: 1}}>
+      <Div css={{flex: 1, backgroundColor: 'white'}}>
         <Row css={{
             borderBottom: '1px solid #aaa',
             marginBottom: 5,
@@ -224,7 +224,7 @@ const instructionsList = {
       }}>
         {data ? i + 1 + '.' : ''}
       </Div>
-      <InstructionInput {...text('text')} placeholder="Text" />
+      <InstructionInput {...text('text')} placeholder="Instruction Text" />
       <Strut size={12} />
       {data 
         ? <RowDeleteButton onClick={remove}>

@@ -21,11 +21,7 @@ const TopButton = glamorous.div({
   }
 })
 
-
-const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
-  if (error) return <div>{error}</div>
-  if (loading) return <div>loading</div>
-
+export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
   const {
     id,
     title,
@@ -41,6 +37,7 @@ const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
   } = recipe
 
   return <div style={{
+    backgroundColor: 'white',
     // boxShadow: '0 0 3px #aaa',
   }}>
     <div style={{
@@ -60,11 +57,11 @@ const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
         by {name}
       </div>
       <div style={{flex: 1}}/>
-      {expanded && <Link to={id + "/edit"}>
-      <TopButton >
-      <Edit size={20}/>
+      {expanded && 
+      <TopButton onClick={onEdit}>
+        <Edit size={20}/>
       </TopButton>
-      </Link>}
+      }
     </div>
     <div style={{
       padding: 5,
@@ -95,6 +92,13 @@ const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
     </ol>}
   </div>
 }
+
+const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
+  if (error) return <div>{error}</div>
+  if (loading) return <div>loading</div>
+  return <RecipeCardBase onEdit={onEdit} expanded={expanded} recipe={recipe} />
+}
+
 // TODO allow you to check of things as you do them
 // (doesn't persist across refreshes probably?)
 // maybe it would though. but you could "clear out" super easy

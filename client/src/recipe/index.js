@@ -9,12 +9,11 @@ import {
 } from 'react-apollo';
 import Modal from '../shared/Modal'
 
-import RecipeCard from '../shared/RecipeCard'
+import Recipe from '../shared/Recipe'
 
-const Recipe = ({match: {params: {id}, url}, history, parent}) => {
-  parent = parent || url.split('/').slice(0, -2).join('/') || '/'
-  return <RecipeCard id={id} expanded />
+const RecipePage = ({match: {params: {id}, url}, history, parent}) => {
+  return <Recipe id={id} />
 }
 
-export default Recipe
+export default RecipePage
 
