@@ -1,4 +1,6 @@
 
+import fs from 'fs'
+
 export default class SimpleDb {
   constructor(path, initial) {
     this.path = path
@@ -8,6 +10,10 @@ export default class SimpleDb {
       console.log('No database found, starting from scratch')
       this.data = initial
     }
+  }
+
+  save() {
+    fs.writeFileSync(this.path, JSON.stringify(this.data))
   }
 
   get(type, id) {
@@ -29,10 +35,13 @@ export default class SimpleDb {
 
   set(type, id, value) {
     this.data[type][id] = value
+    this.save()
     return this.data[type][id]
   }
 
   sets(type, values) {
-    return values.map(value => this.set(type, value.id, value))
+    const result = values.map(value => this.data[type][value.id] = value)
+    this.save()
+    return result
   }
 }
