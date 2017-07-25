@@ -10,10 +10,10 @@ import glamorous from 'glamorous'
 import './App.css';
 import Home from './home';
 import Recipe from './recipe';
-import Edit from './edit'
 import Recipes from './recipes'
 import Modal from './shared/Modal'
 import AddRecipe from './shared/AddRecipe'
+import Lists from './pages/Lists'
 
 import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
@@ -134,6 +134,8 @@ class Body extends Component {
         <Route exact path="/recipes/" component={Recipes} />
         <Route path="/recipe/:id" component={Recipe} />
         <Route path="/add" component={AddRecipe} />
+        <Route path="/lists/" component={Lists} />
+        <Route component={NotFound} />
       </Switch>
       {isModal &&
       <Switch>
@@ -142,50 +144,6 @@ class Body extends Component {
       </Switch>
       }
     </div>
-  }
-
-  _r() {
-    return <Switch>
-      <Route path="/list/:id">
-        <div>
-          {/* <Route path="/" component={List} />  */}
-          <Route path="/recipe/:id">
-            <Switch>
-              <Route path="/" exact component={Recipe}/>
-              <Route path="/edit" component={Edit}/>
-            </Switch>
-          </Route>
-          <Route path="/add" component={Edit}/>
-        </div>
-      </Route>
-      <Route path="/recipes/">
-        <div>
-          <Route path="/recipes/" component={Recipes} />
-          <Route path="/recipes/:id">
-            <Switch>
-              <Route path="/recipes/:id" exact render={props => <Recipe {...props} parent="/recipes" />}/>
-              <Route path="/recipes/:id/edit" component={Edit}/>
-            </Switch>
-          </Route>
-          <Route path="/recipes/add" component={Edit}/>
-        </div>
-      </Route>
-      <Route path="/">
-        <div>
-          <Route path="/" component={Home} />
-          {/* <Route path="/recipe/:id" component={Recipe}/>
-          <Route path="/edit/:id" component={Edit}/>
-          <Route path="/add" component={Edit}/> */}
-          <Route path="/recipe/:id">
-            <Switch>
-              <Route path="/recipe/:id" exact component={Recipe}/>
-              <Route path="/recipe/:id/edit" component={Edit}/>
-            </Switch>
-          </Route>
-          <Route path="/add" component={Edit}/>
-        </div>
-      </Route>
-    </Switch>
   }
 }
 

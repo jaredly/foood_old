@@ -12,7 +12,7 @@ import {
 import RecipeEditor from '../shared/RecipeEditor'
 import {RecipeQuery, recipeCardFragment} from '../shared/RecipeCard'
 import Modal from '../shared/Modal'
-import {listFragment} from '../shared/List'
+import {listFragment, listQuery} from '../shared/List'
 
 const parseSearch = search => search
   ? search.slice(1).split('&').map(m => m.split('=').map(decodeURIComponent))
@@ -41,10 +41,22 @@ const AddRecipe = ({
           tags: [],
         }
       }})
+      // TODO it would be nice to add & add to lists in one fell swoop
+      // but this works for now
       .then(// lists && lists.length
       // TODO support custom list additions
         target
-        ? ({data}) => (console.log('res', data), addRecipeToLists({variables: {recipe: data.addRecipe.id, lists: [target]}}))
+        ? ({data}) => (console.log('res', data), addRecipeToLists({
+          variables: {
+            recipe: data.addRecipe.id,
+            lists: [target],
+          },
+          // TODO might be nice to use an `update` function, b/c I know how this ends
+          refetchQueries: [target].map(lid => ({
+            query: listQuery,
+            variables: {id: lid},
+          }))
+        }))
         : () => {})
         .then(data => console.log('lists', data))
       .then(history.goBack)

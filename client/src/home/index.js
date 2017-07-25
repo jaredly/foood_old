@@ -12,7 +12,7 @@ import {
 import List from '../shared/List'
 
 const Home = ({history, data: {home, loading, error}}) => {
-  if (error) return <div>{error} error</div>
+  if (error) return <div>{JSON.stringify(error, null, 2)} error</div>
   if (loading) return <div>loading</div>
   return <div style={{
     backgroundColor: 'white',

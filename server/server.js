@@ -7,14 +7,18 @@ import {
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
-import { schema } from './src/schema';
+import { schema } from './src/schema'
+import SimpleDb from './src/SimpleDb'
+import data from './src/fixtures'
 
-import { execute, subscribe } from 'graphql';
-import { createServer } from 'http';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql'
+import { createServer } from 'http'
+import { SubscriptionServer } from 'subscriptions-transport-ws'
 
 const PORT = 4000;
 const server = express();
+
+const db = new SimpleDb(__dirname + '/../db.json', data)
 
 server.use('*', cors({ origin: 'http://localhost:3001' }));
 
@@ -23,6 +27,7 @@ server.use('/graphql', bodyParser.json(), graphqlExpress((req, res) => {
     schema,
     context: {
       currentUser: 'jared',
+      db,
     },
   }
 }));
