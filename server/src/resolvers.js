@@ -196,6 +196,18 @@ export const resolvers = {
       return data.recipes[id]
     },
 
+    addRecipeToLists: (_, {id, lists}, {currentUser}) => {
+      // TODO check auth
+      return lists.map(lid => 
+        data.lists[lid].recipes.includes(id)
+          ? data.lists[lid]
+            : (data.lists[lid] = {
+              ...data.lists[lid],
+              recipes: data.lists[lid].recipes.concat([id])
+            })
+      )
+    },
+
     // TODO more atomic recipe editing. like modifying individual stuffs
 
     addList: (_, {title, isPrivate, recipes, editors}, {currentUser}) => {

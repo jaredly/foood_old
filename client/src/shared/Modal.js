@@ -2,6 +2,7 @@ import React from 'react';
 import glamorous, {Div} from 'glamorous'
 
 import RecipeCard from '../shared/RecipeCard'
+import {browserHistory} from 'history'
 
 const {div} = glamorous
 

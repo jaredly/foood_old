@@ -37,8 +37,7 @@ const List = ({onEditRecipe, id, data: {list, loading, error}}) => {
     <div style={{flex: 1, overflow: 'auto'}}>
       {recipes.map(r => (
         <Link
-          to={"/recipe/" + r.id}
-          replace
+          to={{pathname: "/recipe/" + r.id, state: {modal: true}}}
           style={{
             margin: 10,
             cursor: 'pointer',
@@ -57,17 +56,24 @@ const List = ({onEditRecipe, id, data: {list, loading, error}}) => {
   </div>
 }
 
+export const listFragment = `
+fragment ListFragment on List {
+  updated
+  author {id, name}
+  title
+  # TODO paging
+  recipes {
+    id      
+  }
+}
+`
+
 // TODO do paging
 export const listQuery = gql`
+${listFragment}
 query ListQuery($id: ID!) {
   list(id: $id) {
-    updated
-    author {id, name}
-    title
-    # TODO paging
-    recipes {
-      id      
-    }
+    ...ListFragment
   }
 }
 `

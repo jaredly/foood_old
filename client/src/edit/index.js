@@ -12,6 +12,7 @@ import {
 import RecipeEditor from '../shared/RecipeEditor'
 import {RecipeQuery, recipeCardFragment} from '../shared/RecipeCard'
 import Modal from '../shared/Modal'
+import {listFragment} from '../shared/List'
 
 const parseSearch = search => search
   ? search.slice(1).split('&').map(m => m.split('=').map(decodeURIComponent))
@@ -70,7 +71,7 @@ const Edit = ({
         .then(// lists && lists.length
         // TODO support custom list additions
           target
-          ? ({data: {addRecipe: {id}}}) => addRecipeToLists(id, [target])
+          ? ({data: {addRecipe: {id}}}) => addRecipeToLists({variables: {recipe: id, lists: [target]}})
           : () => {})
         .then(goUp)
       }
@@ -117,8 +118,11 @@ mutation UpdateRecipeMutation($id: ID!, $recipe: RecipeInput!) {
 `
 
 export const addRecipeToLists = gql`
-mutation addRecipeToLists($id: ID!, $lists: [ID!]!) {
-  addRecipeToLists(id: $id, lists: $lists)
+${listFragment}
+mutation addRecipeToLists($recipe: ID!, $lists: [ID!]!) {
+  addRecipeToLists(recipe: $recipe, lists: $lists) {
+    ...ListFragment
+  }
 }
 `
 

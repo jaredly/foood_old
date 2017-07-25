@@ -12,6 +12,7 @@ import Home from './home';
 import Recipe from './recipe';
 import Edit from './edit'
 import Recipes from './recipes'
+import Modal from './shared/Modal'
 
 import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
@@ -79,6 +80,109 @@ const NavBar = glamorous.div({
   alignItems: 'center',
 })
 
+const Header = () => (
+  <NavBar>
+    <Link to="/">
+      Home
+    </Link>
+    <div style={{flexBasis: 20}} />
+    <Link to="/recipes/">
+      My Recipes
+    </Link>
+    <div style={{flexBasis: 20}} />
+    <Link to="/lists/">
+      My Lists
+    </Link>
+    <div style={{flex: 1}} />
+    <input
+      placeholder="Search"
+    />
+  </NavBar>
+)
+
+class Body extends Component {
+  constructor(props) {
+    super()
+    this.lastLocation = props.location
+  }
+
+  componentWillUpdate(nextProps) {
+    const {location} = this.props
+    if (
+      nextProps.history.action !== 'POP' &&
+      (!location.state || !location.state.modal)
+    ) {
+      this.lastLocation = location
+    }
+  }
+
+  render() {
+    const {location} = this.props
+    const isModal = !!(
+      location.state &&
+      location.state.modal &&
+      this.lastLocation !== location // not initial render
+    )
+
+    return <div>
+      <Switch location={isModal ? this.lastLocation : location}>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/recipes/" component={Recipes} />
+        <Route path="/recipe/:id" component={Recipe} />
+      </Switch>
+      {isModal &&
+      // <Switch>
+        <Route path="/recipe/:id" render={props => <Modal onBack={props.history.goBack}><Recipe {...props} /></Modal>} />
+      // </Switch>
+      }
+    </div>
+  }
+
+  _r() {
+    return <Switch>
+      <Route path="/list/:id">
+        <div>
+          {/* <Route path="/" component={List} />  */}
+          <Route path="/recipe/:id">
+            <Switch>
+              <Route path="/" exact component={Recipe}/>
+              <Route path="/edit" component={Edit}/>
+            </Switch>
+          </Route>
+          <Route path="/add" component={Edit}/>
+        </div>
+      </Route>
+      <Route path="/recipes/">
+        <div>
+          <Route path="/recipes/" component={Recipes} />
+          <Route path="/recipes/:id">
+            <Switch>
+              <Route path="/recipes/:id" exact render={props => <Recipe {...props} parent="/recipes" />}/>
+              <Route path="/recipes/:id/edit" component={Edit}/>
+            </Switch>
+          </Route>
+          <Route path="/recipes/add" component={Edit}/>
+        </div>
+      </Route>
+      <Route path="/">
+        <div>
+          <Route path="/" component={Home} />
+          {/* <Route path="/recipe/:id" component={Recipe}/>
+          <Route path="/edit/:id" component={Edit}/>
+          <Route path="/add" component={Edit}/> */}
+          <Route path="/recipe/:id">
+            <Switch>
+              <Route path="/recipe/:id" exact component={Recipe}/>
+              <Route path="/recipe/:id/edit" component={Edit}/>
+            </Switch>
+          </Route>
+          <Route path="/add" component={Edit}/>
+        </div>
+      </Route>
+    </Switch>
+  }
+}
+
 class App extends Component {
   // TODO handle auth
   // TODO I want the home page to look gated, but allow people to
@@ -88,64 +192,8 @@ class App extends Component {
       <ApolloProvider client={client}>
         <BrowserRouter>
           <div className="App">
-            <NavBar>
-              <Link to="/">
-                Home
-              </Link>
-              <div style={{flexBasis: 20}} />
-              <Link to="/recipes/">
-                My Recipes
-              </Link>
-              <div style={{flexBasis: 20}} />
-              <Link to="/lists/">
-                My Lists
-              </Link>
-              <div style={{flex: 1}} />
-              <input
-                placeholder="Search"
-              />
-            </NavBar>
-            <Switch>
-              <Route path="/list/:id">
-                <div>
-                 {/* <Route path="/" component={List} />  */}
-                  <Route path="/recipe/:id">
-                    <Switch>
-                      <Route path="/" exact component={Recipe}/>
-                      <Route path="/edit" component={Edit}/>
-                    </Switch>
-                  </Route>
-                  <Route path="/add" component={Edit}/>
-                </div>
-              </Route>
-              <Route path="/recipes/">
-                <div>
-                  <Route path="/recipes/" component={Recipes} />
-                  <Route path="/recipes/:id">
-                    <Switch>
-                      <Route path="/recipes/:id" exact render={props => <Recipe {...props} parent="/recipes" />}/>
-                      <Route path="/recipes/:id/edit" component={Edit}/>
-                    </Switch>
-                  </Route>
-                  <Route path="/recipes/add" component={Edit}/>
-                </div>
-              </Route>
-              <Route path="/">
-                <div>
-                  <Route path="/" component={Home} />
-                  {/* <Route path="/recipe/:id" component={Recipe}/>
-                  <Route path="/edit/:id" component={Edit}/>
-                  <Route path="/add" component={Edit}/> */}
-                  <Route path="/recipe/:id">
-                    <Switch>
-                      <Route path="/recipe/:id" exact component={Recipe}/>
-                      <Route path="/recipe/:id/edit" component={Edit}/>
-                    </Switch>
-                  </Route>
-                  <Route path="/add" component={Edit}/>
-                </div>
-              </Route>
-            </Switch>
+            <Header />
+            <Route component={Body} />
           </div>
         </BrowserRouter>
       </ApolloProvider>

@@ -13,10 +13,7 @@ import RecipeCard from '../shared/RecipeCard'
 
 const Recipe = ({match: {params: {id}, url}, history, parent}) => {
   parent = parent || url.split('/').slice(0, -2).join('/') || '/'
-  return <Modal onBack={() => history.replace(parent)}>
-    <RecipeCard id={id} expanded />
-    TODO comments
-  </Modal>
+  return <RecipeCard id={id} expanded />
 }
 
 export default Recipe
