@@ -11,8 +11,8 @@ import Modal from '../shared/Modal'
 
 import Recipe from '../shared/Recipe'
 
-const RecipePage = ({match: {params: {id}, url}, history, parent}) => {
-  return <Recipe id={id} />
+const RecipePage = ({match: {params: {id}, url}, history, parent, noBorder}) => {
+  return <Recipe id={id} noBorder={noBorder} />
 }
 
 export default RecipePage

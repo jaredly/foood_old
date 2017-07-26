@@ -14,11 +14,25 @@ const TopButton = glamorous.div({
   cursor: 'pointer',
   backgroundColor: 'transparent',
   border: 'none',
-  padding: 0,
+  padding: 11,
   // padding: 8,
   ':hover': {
     backgroundColor: '#eee',
   }
+})
+
+const Title = glamorous.div({
+  fontSize: 20,
+  fontWeight: 'bold',
+  margin: '8px 0',
+})
+
+const SubTitle = glamorous.div({
+  fontSize: 18,
+})
+
+const Section = glamorous.div({
+  padding: 16,
 })
 
 export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
@@ -40,60 +54,74 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
     instructions,
   } = recipe
 
-  return <div style={{
-    backgroundColor: 'white',
-    // boxShadow: '0 0 3px #aaa',
-  }}>
+  return <div>
     <div style={{
-      padding: 10,
       borderBottom: '1px solid #aaa',
       flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'center',
     }}>
-      <div style={{
-        marginRight: 10,
-      }}>
-        {title}
-      </div>
+      <div style={{flexBasis: 16}} />
+      <Title>{title}</Title>
+      <div style={{flexBasis: 8}} />
       <div style={{
         color: '#777',
         fontSize: '80%',
+        margin: '8px 0',
+        marginLeft: 16,
       }}>
         by {name}
       </div>
       <div style={{flex: 1}}/>
       {expanded && 
       <TopButton onClick={onEdit}>
-        <Edit size={20}/>
-      </TopButton>
-      }
+        <Edit size={24}/>
+      </TopButton>}
     </div>
-    <div style={{
-      padding: 5,
-    }}>
-      {ingredients.map(({amount, unit, comments, ingredient: {id, name, plural}}, i) => (
-        <div style={{
-          display: 'block',
-          padding: 5,
-        }} key={i}>
-          {amount} {unit} {name} {comments}
-        </div>
-      ))}  
-    </div>
-    <div style={{
-      padding: 10,
+
+    <Section style={{
       fontStyle: 'italic',
       color: '#777',
       fontSize: '80%',
     }}>
       {description}
-    </div>
-    {expanded && <ol>
-      {instructions.map(({text, ingredientsUsed}, i) => (
-        <li key={i}>
-          {text}
-        </li>
+    </Section>
+    <Section>
+      <SubTitle>Ingredients</SubTitle>
+      <div style={{
+        margin: '16px 0px',
+        display: 'grid',
+        gridTemplateColumns: 'max-content max-content max-content',
+        gridGap: '8px 8px',
+        backgroundColor: '#fff',
+        color: '#444',
+      }}>
+      {ingredients.map(({amount, unit, comments, ingredient: {id, name, plural}}, i) => (
+          [<div style={{textAlign: 'right'}} key={id + 'a'}>
+            {amount}
+          </div>,
+          <div key={id + 'c'}>
+            {unit}
+          </div>,
+          <div key={id + 'b'} style={{marginLeft: 8, flexDirection: 'row'}}>
+            {name}
+            <div style={{fontStyle: 'italic', marginLeft: 16}}>
+              {comments}
+            </div>
+          </div>]
       ))}
-    </ol>}
+      </div>
+    </Section>
+    {expanded && <Section>
+      <SubTitle>Ingredients</SubTitle>
+        <ol style={{margin: 16, paddingLeft: 8}}>
+        {instructions.map(({text, ingredientsUsed}, i) => (
+          <li key={i} style={{padding: '4px 8px'}}>
+            {text}
+          </li>
+        ))}
+      </ol>
+    </Section>}
   </div>
 }
 

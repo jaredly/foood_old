@@ -8,6 +8,7 @@ import {
     graphql,
 } from 'react-apollo';
 import Plus from 'react-icons/lib/io/ios-plus-empty'
+import glamorous, {Div} from 'glamorous'
 
 import RecipeCard from './RecipeCard'
 
@@ -24,14 +25,30 @@ const List = ({onEditRecipe, id, data: {list, loading, error}}) => {
   const {updated, author, title, recipes} = list
   return <div style={{
     boxShadow: '0 0 3px #aaa',
+    backgroundColor: 'white',
     borderRadius: 3,
     flex: 1,
   }}>
-    <div style={{padding: 10, flexDirection: 'row', borderBottom: '1px solid #aaa'}}>
+    <div style={{flexDirection: 'row', alignItems: 'center', borderBottom: '1px solid #aaa'}}>
+      <Div css={{
+        marginLeft: 8,
+      }}>
       {title} (updated {new Date(updated).toLocaleDateString()})
-      <div style={{flex: 1}}/>
-      <Link to={{pathname: "/add", search: `?target=${id}`, state: {modal: true}}}>
-      <Plus/>
+      </Div>
+      <div style={{flex: 1}} />
+      <Link to={{
+        pathname: "/add",
+        search: `?target=${id}`,
+        state: {modal: true}
+      }}>
+      <Div css={{
+        padding: 8,
+        ':hover': {
+          backgroundColor: '#eee',
+        }
+      }}>
+        <Plus/>
+        </Div>
       </Link>
     </div>
     <div style={{flex: 1, overflow: 'auto'}}>

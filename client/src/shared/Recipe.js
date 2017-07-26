@@ -22,10 +22,9 @@ class Recipe extends Component {
   done = () => this.setState({editing: false})
 
   render() {
-    const {id} = this.props
-    return <RecipeQuery id={id}>
+    const {id, noBorder} = this.props
+    const body = <RecipeQuery id={id}>
       {({data: {error, loading, recipe}}) => {
-        console.log('render')
         if (error) return <div>Unable to load the recipe</div>
         if (loading) return <div>Loading...</div>
         if (this.state.editing) {
@@ -39,6 +38,14 @@ class Recipe extends Component {
         }
       }}
     </RecipeQuery>
+
+    if (noBorder) return body
+    return <div style={{
+      margin: 20,
+      backgroundColor: 'white',
+      boxShadow: '0 0 5px #aaa',
+      borderRadius: 4,
+    }}>{body}</div>
   }
 }
 

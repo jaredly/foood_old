@@ -139,8 +139,13 @@ class Body extends Component {
       </Switch>
       {isModal &&
       <Switch>
-        <Route path="/add" render={props => <Modal onBack={props.history.goBack}><AddRecipe {...props} /></Modal>} />
-        <Route path="/recipe/:id" render={props => <Modal onBack={props.history.goBack}><Recipe {...props} /></Modal>} />
+        <Route path="/add"
+          render={props => <Modal onBack={props.history.goBack}>
+            <AddRecipe noBorder {...props} />
+          </Modal>} />
+        <Route path="/recipe/:id" render={props => <Modal onBack={props.history.goBack}>
+            <Recipe noBorder {...props} />
+        </Modal>} />
       </Switch>
       }
     </div>

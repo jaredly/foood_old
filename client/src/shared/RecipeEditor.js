@@ -88,7 +88,7 @@ const Title = glamorous.input({
   fontWeight: 'bold',
   border: 'none',
   flex: 1,
-  padding: '10px 20px',
+  padding: '8px 16px',
   backgroundColor: 'transparent',
 })
 
@@ -101,7 +101,7 @@ const validate = ({title, ingredients, instructions}) => {
 const RecipeEditor = ({recipe, onAction, action, onDone}) => {
   return <Form initial={recipe} onSubmit={onAction}>
     {({text, float, bool, list, toggle, set}, data, isModified) => (
-      <Div css={{flex: 1, backgroundColor: 'white'}}>
+      <Div css={{flex: 1}}>
         <Row css={{
             borderBottom: '1px solid #aaa',
             marginBottom: 5,
@@ -122,10 +122,10 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
               )
             }
           }}>
-            <Checkmark color="green" size={50} />
+            <Checkmark color="green" size={46} />
           </TopButton>
           <TopButton onClick={onDone}>
-            <Close size={50} color="gray" />
+            <Close size={46} color="gray" />
           </TopButton>
         </Row>
         <Div css={{padding: '10px 20px', flex: 1, overflow: 'auto'}}>

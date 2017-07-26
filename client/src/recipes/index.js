@@ -14,7 +14,6 @@ const Recipes = ({history, data: {home, loading, error}}) => {
   if (error) return <div>{error} error</div>
   if (loading) return <div>loading</div>
   return <div style={{
-    backgroundColor: 'white',
     alignItems: 'center',
     padding: 10,
     overflowX: 'auto',
@@ -26,6 +25,7 @@ const Recipes = ({history, data: {home, loading, error}}) => {
             width: 300,
             margin: 10,
             boxShadow: '0 0 3px #aaa',
+            backgroundColor: 'white',
             borderRadius: 3,
             cursor: 'pointer',
           }}

@@ -14,7 +14,7 @@ const Lists = ({history, data: {home, loading, error}}) => {
   if (error) return <div>{error} error</div>
   if (loading) return <div>loading</div>
   return <div style={{
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     alignItems: 'center',
     padding: 10,
     overflowX: 'auto',
@@ -24,9 +24,7 @@ const Lists = ({history, data: {home, loading, error}}) => {
           style={{
             width: 300,
             margin: 10,
-            boxShadow: '0 0 3px #aaa',
-            borderRadius: 3,
-            cursor: 'pointer',
+            // cursor: 'pointer',
           }}
           key={l.id}
         >

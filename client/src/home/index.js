@@ -15,7 +15,6 @@ const Home = ({history, data: {home, loading, error}}) => {
   if (error) return <div>{JSON.stringify(error, null, 2)} error</div>
   if (loading) return <div>loading</div>
   return <div style={{
-    backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'stretch',
     overflowX: 'auto',
