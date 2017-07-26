@@ -120,6 +120,11 @@ type Ingredient {
   plural: String
   defaultUnit: String
   created: Float!
+
+  calories: Float # per 100g
+  density: Float # g/cm^3
+  diets: [String!]
+
   # I as moderator can go back and make the aisles and stuff
   aisle: String
 }
@@ -159,8 +164,7 @@ input IngredientInput {
   name: String!
   plural: String
   defaultUnit: String
-  created: Float!
-  aisle: String
+  aisle: String # TODO figure out how I want aisles. probably by id. dunno
 }
 
 

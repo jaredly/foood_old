@@ -108,7 +108,7 @@ const validate = ({title, ingredients, instructions}) => {
 }
 
 const RecipeEditor = ({recipe, onAction, action, onDone}) => {
-  return <Form initial={recipe} onSubmit={onAction}>
+  return <Form initial={recipe}>
     {({text, float, bool, list, toggle, set}, data, isModified) => (
       <Div css={{flex: 1}}>
         <Row css={{

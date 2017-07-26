@@ -13,6 +13,8 @@ const isAncestor = (parent, node) => {
   }
 }
 
+const onEnter = fn => e => e.key === 'Enter' || e.key === ' ' ? fn(e) : null
+
 export default class AutoSelect extends React.Component {
   state = {open: false}
 
@@ -64,6 +66,8 @@ export default class AutoSelect extends React.Component {
     >
       <Div
         onMouseDown={() => this.setState({open: !open})}
+        onKeyDown={onEnter(() => this.setState({open: !open}))}
+        tabIndex={0}
         css={{
           fontSize: 16,
           padding: '8px 16px',
@@ -102,6 +106,7 @@ export default class AutoSelect extends React.Component {
                     this.props.onChange(option.id)
                   }
               }
+              tabIndex={0}
             >
               {option.name}
             </Option>
