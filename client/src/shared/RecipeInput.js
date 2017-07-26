@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import ReactDOM from 'react-dom'
 import {
   Link
 } from 'react-router-dom'
@@ -6,6 +7,8 @@ import {
 import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
 import Checkmark from 'react-icons/lib/io/ios-checkmark-empty'
 import Close from 'react-icons/lib/io/ios-close-empty'
+
+import AddIngredient from './AddIngredient'
 
 import {
     gql,
@@ -25,8 +28,62 @@ const RecipeInput = ({value, onChange, data: {error, loading, ingredients}}) => 
     value={value}
     onChange={onChange}
     options={ingredients}
+    onAdd={e => {
+      console.log('adding')
+      addIngredient(e.clientX, e.clientY, id => {
+        onChange(id)
+      })
+    }}
+    addText='New ingredient'
     placeholder='Ingredient'
   />
+}
+
+const isAncestor = (parent, node) => {
+  while (node && node !== document.body) {
+    if (node === parent) return true
+    node = node.parentNode
+  }
+}
+
+
+const addIngredient = (x, y, onDone) => {
+  const node = document.createElement('div')
+
+  const listen = e => {
+    if (isAncestor(node, e.target)) {
+      return
+    }
+    e.stopPropagation()
+    e.preventDefault()
+    cleanup()
+  }
+
+  const cleanup = () => {
+    ReactDOM.unmountComponentAtNode(node)
+    node.parentNode.removeChild(node)
+    window.removeEventListener('mousedown', listen, true)
+  }
+
+  document.body.appendChild(node)
+  window.addEventListener('mousedown', listen, true)
+
+  ReactDOM.render(<div
+    style={{
+      boxShadow: '0 0 5px #aaa',
+      borderRadius: 4,
+      backgroundColor: 'white',
+      position: 'absolute',
+      zIndex: 1000,
+      top: y,
+      left: x,
+    }}
+  >
+    <AddIngredient
+      onDone={onDone}
+      onClose={cleanup}
+    />
+  </div>, node)
 }
 
 export const ingredientsQuery = gql`

@@ -124,6 +124,8 @@ type Ingredient {
   aisle: String
 }
 
+
+
 input InstructionInput {
   id: ID
   text: String
@@ -150,6 +152,15 @@ input RecipeInput {
   prepTime: Int
   totalTime: Int
   ovenTemp: Int
+}
+
+# NOTE Ingredient names are also immutable
+input IngredientInput {
+  name: String!
+  plural: String
+  defaultUnit: String
+  created: Float!
+  aisle: String
 }
 
 
@@ -204,7 +215,7 @@ type Mutation {
 
   addList(title: String!, isPrivate: Boolean, recipes: [ID!]!, editors: [ID!]!): List!
   addTag(title: String!): Tag!
-  addIngredient(name: String!, plural: String, defaultUnit: String, aisle: String): Ingredient!
+  addIngredient(ingredient: IngredientInput!): Ingredient!
 
   addRecipeToLists(recipe: ID!, lists: [ID!]!): [List!]!
 

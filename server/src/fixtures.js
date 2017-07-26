@@ -7,6 +7,7 @@ const data = {
       name: 'JAred F',
       joined: Date.now(),
     },
+
     selina: {
       id: 'selina',
       email: 'selina@selina.selina',
@@ -14,6 +15,7 @@ const data = {
       joined: Date.now(),
     },
   },
+
   userData: {
     jared: {
       id: 'jared',
@@ -21,6 +23,7 @@ const data = {
       homepageLists: [3, 4],
     }
   },
+
   lists: {
     3: {
       id: 3,
@@ -32,6 +35,7 @@ const data = {
       editors: ['selina'],
       recipes: [1, 2],
     },
+
     4: {
       id: 4,
       title: 'Great freezer meals',
@@ -69,6 +73,7 @@ const data = {
       yield: 5,
       yieldUnit: 'meals',
     },
+
     2: {
       authorId: 'selina',
       id: '2',
@@ -100,6 +105,7 @@ const data = {
     4: {id: 4, authorId: 'jared', name: 'whole wheat flour', created: Date.now(), aisle: null, defaultUnit: 'cups'},
     5: {id: 5, authorId: 'jared', name: 'olive oil', created: Date.now(), aisle: null, defaultUnit: 'T'},
   },
+
   tags: {
     2: {id: 2, authorId: 'jared', name: 'Asian', created: Date.now()},
     3: {id: 3, authorId: 'jared', name: 'Freezer', created: Date.now()},

@@ -135,7 +135,7 @@ export const resolvers = {
       })
     },
 
-    addIngredient: (_, {name, plural, defaultUnit, aisle}, {currentUser, db}) => {
+    addIngredient: (_, {ingredient: {name, plural, defaultUnit, aisle}}, {currentUser, db}) => {
       const id = uuid()
       return db.set('ingredients', id, {
         id,

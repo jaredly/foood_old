@@ -1,10 +1,10 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import {
   Link
 } from 'react-router-dom'
 
 import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
+import Portal from './Portal'
 
 const isAncestor = (parent, node) => {
   while (node && node !== document.body) {
@@ -49,7 +49,7 @@ export default class AutoSelect extends React.Component {
 
   render() {
     const {open} = this.state
-    const {value, options, placeholder} = this.props
+    const {value, options, placeholder, addText, onAdd} = this.props
     const i = this.currentIndex()
     const name = i === null ? placeholder : options[i].name
     return <Div
@@ -92,16 +92,8 @@ export default class AutoSelect extends React.Component {
           }}
         >
           {options.map(option => (
-            <Div
+            <Option
               key={option.id}
-              css={{
-                whiteSpace: 'nowrap',
-                fontSize: 16,
-                padding: '8px 16px',
-                ':hover': {
-                  backgroundColor: '#eee',
-                }
-              }}
               onMouseDown={
                 option.id === value
                   ? () => this.setState({open: false})
@@ -112,8 +104,20 @@ export default class AutoSelect extends React.Component {
               }
             >
               {option.name}
-            </Div>
+            </Option>
           ))}
+          {addText && <Option
+            onMouseDown={e => {
+              this.setState({open: false})
+              this.props.onAdd(e)
+            }}
+            css={{
+              fontStyle: 'italic',
+              color: '#777',
+            }}
+          >
+            {addText}            
+          </Option>}
         </Div>
       </Portal>
       }
@@ -121,23 +125,11 @@ export default class AutoSelect extends React.Component {
   }
 }
 
-class Portal extends React.Component {
-  componentDidMount() {
-    this.node = document.createElement('div')
-    document.body.appendChild(this.node)
-    ReactDOM.render(this.props.children, this.node)
-    this.node.style.position = 'absolute'
-    const box = this.blank.getBoundingClientRect()
-    this.node.style.top = box.top + 'px'
-    this.node.style.left = box.left + 'px'
-    this.node.style.zIndex = 1000
+const Option = glamorous.div({
+  whiteSpace: 'nowrap',
+  fontSize: 16,
+  padding: '8px 16px',
+  ':hover': {
+    backgroundColor: '#eee',
   }
-
-  componentWillUnmount() {
-    this.node.parentNode.removeChild(this.node)
-  }
-
-  render() {
-    return <div style={this.props.style} ref={blank => this.blank = blank} />
-  }
-}
+})
