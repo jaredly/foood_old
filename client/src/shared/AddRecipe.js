@@ -22,12 +22,13 @@ const parseSearch = search => search
 const AddRecipe = ({
   match: {params: {id}, url},
   history,
+  noBorder,
   location: {search},
   addRecipeMutation,
   addRecipeToLists,
 }) => {
   const target = parseSearch(search).target
-  return <RecipeEditor
+  const body = <RecipeEditor
     recipe={null}
     lists={target ? [+target] : []}
     action="Create"
@@ -63,6 +64,15 @@ const AddRecipe = ({
     }
     onDone={history.goBack}
   />
+  if (noBorder) return body
+  return <div style={{
+    backgroundColor: 'white',
+    margin: 16,
+    boxShadow: '0 0 5px #aaa',
+    border: 4,
+  }}>
+    {body}
+  </div>
 }
 
 export const addRecipeMutation = gql`

@@ -7,6 +7,7 @@ import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
 import Checkmark from 'react-icons/lib/io/ios-checkmark-empty'
 import Close from 'react-icons/lib/io/ios-close-empty'
 
+import AutoSelect from './AutoSelect'
 import Form from './formative'
 
 const {div} = glamorous
@@ -40,12 +41,19 @@ const ingredients = [{
 // w/ a good null state
 
 const Dropdown = ({value, onChange, placeholder, options}) => {
-  return <select style={{flex: 1}} value={value || ''} onChange={e => {
-    onChange(e.target.value)    
-  }}>
-    <glamorous.Option disabled css={{fontStyle: 'italic', color: '#aaa'}} value="">{placeholder}</glamorous.Option>
-    {options.map(({id, name, plural}) => <option key={id} value={id}>{plural || name}</option>)}
-  </select>
+  return <AutoSelect
+    value={value}
+    onChange={onChange}
+    options={options}
+    placeholder={placeholder}
+  />
+
+  // return <select style={{flex: 1}} value={value || ''} onChange={e => {
+  //   onChange(e.target.value)    
+  // }}>
+  //   <glamorous.Option disabled css={{fontStyle: 'italic', color: '#aaa'}} value="">{placeholder}</glamorous.Option>
+  //   {options.map(({id, name, plural}) => <option key={id} value={id}>{plural || name}</option>)}
+  // </select>
 }
 
 const Row = div({flexDirection: 'row', alignItems: 'center'})
@@ -177,7 +185,7 @@ const ingredientsList = {
         marginLeft: 5,
         width: 10,
       }}>
-        {data ? i + 1 + '.' : ''}
+        {data ? i + 1 + '.' : 'new'}
       </Div>
       <AmountInput {...float('amount', 1)} placeholder="Amount" />
       {/* TODO defaultunit? */}
@@ -187,7 +195,6 @@ const ingredientsList = {
         placeholder="Ingredient"
         options={ingredients}
       />
-      <Strut size={10} />
       <IngredientCommentsInput {...text('comments')} placeholder="Comments" />
       {data 
         ? <RowDeleteButton onClick={remove}>
@@ -243,6 +250,11 @@ const AmountInput = glamorous.input({
   textAlign: 'right',
   fontStyle: 'inherit',
   border: 'none',
+  padding: 8,
+  ':hover': {
+    outline: '1px solid #aaa',
+    zIndex: 2,
+  }
 })
 
 const IngredientCommentsInput = glamorous.input({
@@ -250,9 +262,14 @@ const IngredientCommentsInput = glamorous.input({
   fontSize: 10,
   backgroundColor: 'transparent',
   color: 'currentColor',
-  padding: 5,
+  padding: '8px',
   fontStyle: 'inherit',
   border: 'none',
+  flex: 1,
+  ':hover': {
+    outline: '1px solid #aaa',
+    zIndex: 2,
+  }
 })
 
 const InstructionInput = glamorous.input({
@@ -261,6 +278,10 @@ const InstructionInput = glamorous.input({
   border: 'none',
   padding: 5,
   alignSelf: 'stretch',
+  ':hover': {
+    outline: '1px solid #aaa',
+    zIndex: 2,
+  }
 })
 
 const UnitInput = glamorous.input({
@@ -268,6 +289,11 @@ const UnitInput = glamorous.input({
   backgroundColor: 'transparent',
   fontStyle: 'inherit',
   border: 'none',
+  padding: 8,
+  ':hover': {
+    outline: '1px solid #aaa',
+    zIndex: 2,
+  }
 })
 
 const RowDeleteButton = glamorous.button({
@@ -281,6 +307,7 @@ const RowDeleteButton = glamorous.button({
   // borderRadius: 5,
   ':hover': {
     backgroundColor: '#eee',
+    zIndex: 2,
   }
 })
 
