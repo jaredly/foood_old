@@ -16,6 +16,10 @@ export default class SimpleDb {
     fs.writeFileSync(this.path, JSON.stringify(this.data))
   }
 
+  all(type) {
+    return Object.values(this.data[type])
+  }
+
   get(type, id) {
     return this.data[type][id]
   }

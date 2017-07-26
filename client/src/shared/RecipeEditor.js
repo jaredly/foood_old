@@ -6,6 +6,7 @@ import {
 import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
 import Checkmark from 'react-icons/lib/io/ios-checkmark-empty'
 import Close from 'react-icons/lib/io/ios-close-empty'
+import RecipeInput from './RecipeInput'
 
 import AutoSelect from './AutoSelect'
 import Form from './formative'
@@ -190,11 +191,14 @@ const ingredientsList = {
       <AmountInput {...float('amount', 1)} placeholder="Amount" />
       {/* TODO defaultunit? */}
       <UnitInput {...text('unit')} placeholder="Unit" />
-      <Dropdown
+      <RecipeInput
+        {...custom('ingredient')}
+      />
+      {/* <Dropdown
         {...custom('ingredient')}
         placeholder="Ingredient"
         options={ingredients}
-      />
+      /> */}
       <IngredientCommentsInput {...text('comments')} placeholder="Comments" />
       {data 
         ? <RowDeleteButton onClick={remove}>

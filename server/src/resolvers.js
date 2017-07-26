@@ -37,6 +37,7 @@ export const resolvers = {
     recipe: getByParam('recipes', 'id'),
     home: () => ({id: 'hello'}),
     user: getByParam('users', 'id'),
+    ingredients: (_, __, {db}) => db.all('ingredients'), // TODO sort by popularity maybe?
   },
 
   RecipeIngredient: {

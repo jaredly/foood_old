@@ -191,6 +191,8 @@ type Query {
   recipe(id: ID!): Recipe!
   list(id: ID!): List!
 
+  ingredients: [Ingredient!]!
+
   channels: [Channel]
   channel(id: ID!): Channel
 }
