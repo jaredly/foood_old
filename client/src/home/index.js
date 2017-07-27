@@ -23,7 +23,7 @@ const Home = ({history, data: {home, loading, error}}) => {
       {home.homepageLists.map(l => (
         <div key={l.id} style={{
           padding: 20, 
-          width: 400,
+          width: 500,
         }}>
         <List 
           id={l.id}  

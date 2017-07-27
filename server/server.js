@@ -41,7 +41,7 @@ server.get('/import', (req, res) => {
   .then(r => r.text())
   .then(text => {
     const result = importer(text)
-    console.log('result', result)
+    // console.log('result', result)
     res.json(result)
   })
 })

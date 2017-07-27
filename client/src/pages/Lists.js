@@ -22,7 +22,7 @@ const Lists = ({history, data: {home, loading, error}}) => {
       {home.user.lists.map(l => (
         <div
           style={{
-            width: 300,
+            width: 500,
             margin: 10,
             // cursor: 'pointer',
           }}

@@ -34,7 +34,6 @@ class ApolloClient extends React.Component {
 }
 
 const RecipeInput = ({value, onChange, data: {error, loading, ingredients}}) => {
-  console.log(error)
   if (error) return <div>Error</div>
   if (loading) return <div>Loading</div>
   return <ApolloClient>
@@ -43,7 +42,6 @@ const RecipeInput = ({value, onChange, data: {error, loading, ingredients}}) => 
       onChange={onChange}
       options={ingredients}
       onAdd={e => {
-        console.log('adding')
         addIngredient(client, store, e.clientX, e.clientY, id => {
           onChange(id)
         })

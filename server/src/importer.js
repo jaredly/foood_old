@@ -47,27 +47,27 @@ const unwhite = text => {
 }
 
 const units = {
-  'cup': ['C', 'c', 'cup', 'cups'],
-  'tablespoon': ['T', 'Tbs', 'tbs', 'tablespoon', 'tablespoons', 'Tablespoon', 'Tablespoons'],
-  'teaspoon': ['t', 'tsp', 'Tsp', 'teaspoon', 'teaspoons', 'Teaspoon', 'Teaspoons'],
-  'ounce': ['oz', 'ounce', 'ounces'],
-  'gram': ['g', 'gram', 'G', 'Gram', 'grams', 'Grams'],
-  'kilogram': ['kg', 'Kg', 'Kilogram', 'Kilograms', 'kilogram', 'kilograms'],
-  'quart': ['quart', 'Quart', 'quarts', 'qts', 'qt'],
-  'can': ['can', 'cans', 'Can', 'Cans'],
-  'package': ['package', 'Package', 'pkg', 'Pkg'],
+  'cup': ['cups', 'cup', 'Cups'],
+  'tablespoon': ['tablespoons', 'tablespoon', 'Tablespoons', 'Tablespoon', 'Tbs', 'tbs', 'T'],
+  'teaspoon': ['t', 'tsp', 'Tsp', 'teaspoons', 'teaspoon', 'Teaspoons', 'Teaspoon'],
+  'ounce': ['oz', 'ounces', 'ounce'],
+  'gram': ['g', 'grams', 'G', 'Grams', 'gram', 'Gram'],
+  'kilogram': ['kg', 'Kg', 'Kilograms', 'Kilogram', 'kilograms', 'kilogram'],
+  'quart': ['quarts', 'Quarts', 'quart', 'Quart', 'qts', 'qt'],
+  'can': ['cans', 'can', 'Cans', 'Can'],
+  'package': ['packages', 'package', 'Packages', 'Package', 'pkg', 'Pkg'],
 }
 
 const parseUnit = (amount, text) => {
   text = text.trim()
   for (let unit in units) {
-    for (let n in units[unit]) {
-      if (text.indexOf(unit) === 0) {
+    for (let n of units[unit]) {
+      if (text.indexOf(n + ' ') === 0) {
         return {
           amount,
           unit,
           ingredient: null,
-          comments: text.slice(unit.length).trim(),
+          comments: text.slice(n.length).trim(),
         }
       }
     }
@@ -82,6 +82,25 @@ const parseUnit = (amount, text) => {
 }
 
 const parseIngredient = text => {
+  if (text.match(/^½/)) {
+    return parseUnit(
+      .5,
+      text.slice(1),
+    )
+  }
+  if (text.match(/^⅛/)) {
+    return parseUnit(
+      .125,
+      text.slice(1),
+    )
+  }
+  if (text.match(/^¼/)) {
+    return parseUnit(
+      .25,
+      text.slice(1),
+    )
+  }
+
   const numberMatch = text.match(/^(\d+)\s+(\d)\/(\d)/)
   if (numberMatch) {
     return parseUnit(
@@ -126,7 +145,7 @@ export default text => {
       const dt = $(elem).children('dt').get()
       if (dt.length) return dt.map(el => $(el).text())
       const li = $(elem).children('li').get()
-      if (li.length) return li.map(el => $(li).text())
+      if (li.length) return li.map(el => $(el).text())
       return [$(elem).text()]
     })
     .get()

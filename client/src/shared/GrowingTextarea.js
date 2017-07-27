@@ -135,9 +135,9 @@ export default class GrowingTextarea extends Component {
   }
 
   render() {
-    const {onHeightChange, ...props} = this.props
+    const {onHeightChange, style, ...props} = this.props
     return (
-      <div style={styles.container}>
+      <div style={{...styles.container, ...style}}>
         <textarea
           {...props}
           ref={n => (this.textarea = n)}
@@ -160,7 +160,6 @@ const styles = {
   container: {
     position: 'relative',
     cursor: 'text',
-    flex: 1,
   },
 
   textarea: {

@@ -313,7 +313,10 @@ const instructionsList = {
       }}>
         {data ? i + 1 + '.' : ''}
       </Div>
-      <InstructionInput {...text('text')} placeholder="Instruction Text" />
+      <InstructionInput
+        {...text('text')}
+        style={{flex: 1}}
+        placeholder="Instruction Text" />
       {data 
         ? <RowDeleteButton onClick={remove}>
             <Close size={20} />

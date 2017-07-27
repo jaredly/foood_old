@@ -18,7 +18,8 @@ const Backdrop = div({
 })
 
 const Inner = div({
-  width: 500,
+  width: 800,
+  maxWidth: '100%',
   height: 600,
   boxShadow: '0 3px 10px #000',
   backgroundColor: 'white',
