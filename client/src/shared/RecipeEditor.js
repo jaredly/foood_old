@@ -7,6 +7,7 @@ import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
 import Checkmark from 'react-icons/lib/io/ios-checkmark-empty'
 import Close from 'react-icons/lib/io/ios-close-empty'
 import RecipeInput from './RecipeInput'
+import GrowingTextarea from './GrowingTextarea'
 
 import AutoSelect from './AutoSelect'
 import Form from './formative'
@@ -84,7 +85,7 @@ const TopButton = glamorous.button({
   }
 })
 
-const Description = glamorous.textarea({
+const Description = glamorous(GrowingTextarea)({
   fontSize: 10,
   fontStyle: 'italic',
   border: '1px solid #ddd',
@@ -157,6 +158,17 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
           <Label>Instructions</Label>
           {list(instructionsList)}
         </Div>
+        <Div
+        >
+          Import from URL:
+          <input onPaste={e => {
+            e.clipboardData.items[0].getAsString(url => {
+              fetch('http://localhost:4000/import?url=' + encodeURIComponent(url))
+              .then(r => r.json())
+              .then(res => console.log('done', res))
+            })
+          }} />
+        </Div>
       </Div>
     )}
   </Form>
@@ -188,9 +200,9 @@ const ingredientsList = {
       }}>
         {data ? i + 1 + '.' : 'new'}
       </Div>
-      <AmountInput {...float('amount', 1)} placeholder="Amount" />
+      <AmountInput onFocus={selectAll} {...float('amount', 1)} placeholder="Amount" />
       {/* TODO defaultunit? */}
-      <UnitInput {...text('unit')} placeholder="Unit" />
+      <UnitInput onFocus={selectAll} {...text('unit')} placeholder="Unit" />
       <RecipeInput
         {...custom('ingredient')}
       />
@@ -199,7 +211,11 @@ const ingredientsList = {
         placeholder="Ingredient"
         options={ingredients}
       /> */}
-      <IngredientCommentsInput {...text('comments')} placeholder="Comments" />
+      <IngredientCommentsInput 
+        onFocus={selectAll}
+        {...text('comments')}
+        placeholder="Comments"
+      />
       {data 
         ? <RowDeleteButton onClick={remove}>
             <Close size={20} />
@@ -207,6 +223,12 @@ const ingredientsList = {
         : <Strut size={30} />}
     </Row>
   )
+}
+
+const selectAll = e => {
+  e.target.select()
+  // e.target.selectionStart = 0
+  // e.target.selectionEnd = e.target.value.length
 }
 
 const instructionsList = {
@@ -222,7 +244,11 @@ const instructionsList = {
   />,
   item: ({text, float, custom, remove}, data, i) => (
     <Row key={i} css={[
-      {margin: 0, minHeight: 30},
+      {
+        margin: 0,
+        minHeight: 30,
+        alignItems: 'flex-start',
+      },
       data === null && {
         color: '#888',
         fontStyle: 'italic',
@@ -232,6 +258,7 @@ const instructionsList = {
         marginRight: 10,
         marginLeft: 5,
         width: 10,
+        lineHeight: '28px',
       }}>
         {data ? i + 1 + '.' : ''}
       </Div>
@@ -261,6 +288,18 @@ const AmountInput = glamorous.input({
   }
 })
 
+const UnitInput = glamorous.input({
+  width: 50,
+  backgroundColor: 'transparent',
+  fontStyle: 'inherit',
+  border: 'none',
+  padding: 8,
+  ':hover': {
+    outline: '1px solid #aaa',
+    zIndex: 2,
+  }
+})
+
 const IngredientCommentsInput = glamorous.input({
   width: 70,
   fontSize: 10,
@@ -276,24 +315,12 @@ const IngredientCommentsInput = glamorous.input({
   }
 })
 
-const InstructionInput = glamorous.input({
+const InstructionInput = glamorous(GrowingTextarea)({
   flex: 1,
   fontStyle: 'inherit',
   border: 'none',
-  padding: 5,
-  alignSelf: 'stretch',
-  ':hover': {
-    outline: '1px solid #aaa',
-    zIndex: 2,
-  }
-})
-
-const UnitInput = glamorous.input({
-  width: 50,
-  backgroundColor: 'transparent',
-  fontStyle: 'inherit',
-  border: 'none',
   padding: 8,
+  alignSelf: 'stretch',
   ':hover': {
     outline: '1px solid #aaa',
     zIndex: 2,

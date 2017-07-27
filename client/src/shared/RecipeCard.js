@@ -113,7 +113,7 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
       </div>
     </Section>
     {expanded && <Section>
-      <SubTitle>Ingredients</SubTitle>
+      <SubTitle>Instructions</SubTitle>
         <ol style={{margin: 16, paddingLeft: 8}}>
         {instructions.map(({text, ingredientsUsed}, i) => (
           <li key={i} style={{padding: '4px 8px'}}>

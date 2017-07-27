@@ -1,15 +1,18 @@
 
-import express from 'express';
+import express from 'express'
+import bodyParser from 'body-parser'
+import fetch from 'node-fetch'
+import cors from 'cors'
+
 import {
   graphqlExpress,
   graphiqlExpress,
-} from 'graphql-server-express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
+} from 'graphql-server-express'
 
 import { schema } from './src/schema'
 import SimpleDb from './src/SimpleDb'
 import data from './src/fixtures'
+import importer from './src/importer'
 
 import { execute, subscribe } from 'graphql'
 import { createServer } from 'http'
@@ -31,6 +34,17 @@ server.use('/graphql', bodyParser.json(), graphqlExpress((req, res) => {
     },
   }
 }));
+
+server.get('/import', (req, res) => {
+  console.log(req.param('url'))
+  fetch(req.param('url'))
+  .then(r => r.text())
+  .then(text => {
+    const result = importer(text)
+    console.log('result', result)
+    res.json(result)
+  })
+})
 
 server.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql',
