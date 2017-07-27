@@ -48,6 +48,8 @@ export default class AutoSelect extends React.Component {
     this.state = {
       open: false,
       text: name,
+      selectedIndex: 0,
+      filtered: props.options,
     }
   }
 
@@ -79,6 +81,12 @@ export default class AutoSelect extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.open && !this.state.open) {
+      this.input.blur()
+    }
+  }
+
   onMouseDown = e => {
     if (isAncestor(this.node, e.target)) {
       return
@@ -91,10 +99,74 @@ export default class AutoSelect extends React.Component {
     this.setState({open: false})
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.open && !this.state.open) {
-      this.input.blur()
+  onKeyDown = e => {
+    const {selectedIndex, filtered} = this.state
+    switch (e.key) {
+      case 'ArrowUp':
+      e.preventDefault()
+        return this.setState({
+          selectedIndex: selectedIndex > 0
+            ? selectedIndex - 1
+            : filtered.length - 1
+        })
+      case 'ArrowDown':
+      e.preventDefault()
+        return this.setState({
+          selectedIndex: selectedIndex < filtered.length - 1
+            ? selectedIndex + 1
+            : 0
+        })
     }
+  }
+
+  setText(text) {
+    const {options} = this.props
+
+    const filtered = text ? options.filter(option => {
+      return option.name.toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
+        (option.plural &&
+          option.plural.toLowerCase().indexOf(text.toLowerCase()) !== -1)
+    }) : options
+    this.setState({
+      filtered,
+      text,
+    })
+  }
+
+  renderMenu() {
+    const {open, text, filtered} = this.state
+    const {value, options, placeholder, addText, onAdd} = this.props
+
+    return <Portal style={{
+        position: 'absolute',
+        top: '100%',
+        marginTop: 5,
+        left: 0,
+    }}>
+      <Menu
+        innerRef={menu => this.menu = menu}
+      >
+        {renderOptions(
+          filtered,
+          this.state.selectedIndex,
+          value,
+          () => this.setState({open: false}),
+          this.props.onChange,
+        )}
+        {addText && <Option
+          onMouseDown={e => {
+            this.setState({open: false})
+            this.props.onAdd(e)
+          }}
+          css={{
+            fontStyle: 'italic',
+            color: '#777',
+          }}
+        >
+          {addText}            
+        </Option>}
+      </Menu>
+    </Portal>
   }
 
   render() {
@@ -110,7 +182,8 @@ export default class AutoSelect extends React.Component {
           fontSize: 16,
           border: 'none',
         }}
-        onChange={e => this.setState({text: e.target.value})}
+        onChange={e => this.setText(e.target.value)}
+        onKeyDown={this.onKeyDown}
         innerRef={input => this.input = input}
         placeholder={placeholder}
         onFocus={() => {
@@ -119,43 +192,13 @@ export default class AutoSelect extends React.Component {
         }}
         onBlur={() => this.setState({open: false})}
       />
-      {this.state.open && 
-      <Portal style={{
-          position: 'absolute',
-          top: '100%',
-          marginTop: 5,
-          left: 0,
-      }}>
-        <Menu
-          innerRef={menu => this.menu = menu}
-        >
-          {renderOptions(
-            options,
-            value,
-            () => this.setState({open: false}),
-            this.props.onChange,
-          )}
-          {addText && <Option
-            onMouseDown={e => {
-              this.setState({open: false})
-              this.props.onAdd(e)
-            }}
-            css={{
-              fontStyle: 'italic',
-              color: '#777',
-            }}
-          >
-            {addText}            
-          </Option>}
-        </Menu>
-      </Portal>
-      }
+      {open && this.renderMenu()}
     </Container>
   }
 }
 
-const renderOptions = (options, value, onClose, onChange) => {
-  return options.map(option => (
+const renderOptions = (options, selectedIndex, value, onClose, onChange) => {
+  return options.map((option, i) => (
     <Option
       key={option.id}
       onMouseDown={
@@ -166,6 +209,7 @@ const renderOptions = (options, value, onClose, onChange) => {
             onChange(option.id)
           }
       }
+      css={selectedIndex === i && {backgroundColor: '#eee'}}
       tabIndex={0}
     >
       {option.name}

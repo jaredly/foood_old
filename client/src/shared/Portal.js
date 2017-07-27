@@ -13,6 +13,10 @@ export default class Portal extends React.Component {
     this.node.style.zIndex = 1000
   }
 
+  componentWillReceiveProps(nextProps) {
+    ReactDOM.render(nextProps.children, this.node)
+  }
+
   componentWillUnmount() {
     this.node.parentNode.removeChild(this.node)
   }
