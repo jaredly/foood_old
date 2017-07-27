@@ -35,19 +35,40 @@ const Menu = glamorous.div({
   boxShadow: '0 0 5px #aaa',
   cursor: 'pointer',
   borderRadius: 4,
+  maxHeight: 300,
+  overflow: 'auto',
 })
 
 export default class AutoSelect extends React.Component {
-  state = {open: false}
+  constructor(props) {
+    super()
 
-  currentIndex() {
-    const {value, options} = this.props
+    const i = this.currentIndex(props)
+    const name = i === null ? '' : props.options[i].name
+    this.state = {
+      open: false,
+      text: name,
+    }
+  }
+
+  currentIndex({value, options}) {
+    // const {value, options} = this.props
     for (let i = 0; i < options.length; i++) {
       if (options[i].id === value) {
         return i
       }
     }
     return null
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.value !== this.props.value) {
+      const i = this.currentIndex(nextProps)
+      const name = i === null ? null : nextProps.options[i].name
+      if (name) {
+        this.setState({text: name})
+      }
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -70,19 +91,34 @@ export default class AutoSelect extends React.Component {
     this.setState({open: false})
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.open && !this.state.open) {
+      this.input.blur()
+    }
+  }
+
   render() {
-    const {open} = this.state
+    const {open, text} = this.state
     const {value, options, placeholder, addText, onAdd} = this.props
-    const i = this.currentIndex()
-    const name = i === null ? placeholder : options[i].name
+    // const i = this.currentIndex()
+    // const name = i === null ? null : options[i].name
     return <Container innerRef={node => this.node = node}>
-      <Current
-        onMouseDown={() => this.setState({open: !open})}
-        onKeyDown={onEnter(() => this.setState({open: !open}))}
-        tabIndex={0}
-      >
-        {name}
-      </Current>
+      <Input
+        value={text}
+        style={{
+          padding: 8,
+          fontSize: 16,
+          border: 'none',
+        }}
+        onChange={e => this.setState({text: e.target.value})}
+        innerRef={input => this.input = input}
+        placeholder={placeholder}
+        onFocus={() => {
+          this.input.select()
+          this.setState({open: true})
+        }}
+        onBlur={() => this.setState({open: false})}
+      />
       {this.state.open && 
       <Portal style={{
           position: 'absolute',
@@ -95,6 +131,7 @@ export default class AutoSelect extends React.Component {
         >
           {renderOptions(
             options,
+            value,
             () => this.setState({open: false}),
             this.props.onChange,
           )}
@@ -117,7 +154,7 @@ export default class AutoSelect extends React.Component {
   }
 }
 
-const renderOptions = (options, onClose, onChange) => {
+const renderOptions = (options, value, onClose, onChange) => {
   return options.map(option => (
     <Option
       key={option.id}
