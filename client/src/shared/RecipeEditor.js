@@ -86,7 +86,7 @@ const TopButton = glamorous.button({
 })
 
 const Description = glamorous(GrowingTextarea)({
-  fontSize: 10,
+  fontSize: 16,
   fontStyle: 'italic',
   border: '1px solid #ddd',
   padding: 8,
@@ -210,12 +210,13 @@ class Importer extends React.Component {
         marginLeft: 8,
       }}
     >
-      Import from URL:
+      Import from URL
       <Input
         css={{
           padding: 8,
           marginLeft: 16,
           fontSize: 16,
+          flex: 1,
         }}
         onPaste={this.onPaste}
         value=''
@@ -313,7 +314,6 @@ const instructionsList = {
         {data ? i + 1 + '.' : ''}
       </Div>
       <InstructionInput {...text('text')} placeholder="Instruction Text" />
-      <Strut size={12} />
       {data 
         ? <RowDeleteButton onClick={remove}>
             <Close size={20} />
@@ -352,7 +352,7 @@ const UnitInput = glamorous.input({
 
 const IngredientCommentsInput = glamorous.input({
   width: 70,
-  fontSize: 10,
+  fontSize: 16,
   backgroundColor: 'transparent',
   color: 'currentColor',
   padding: '8px',
@@ -369,6 +369,8 @@ const InstructionInput = glamorous(GrowingTextarea)({
   flex: 1,
   fontStyle: 'inherit',
   border: 'none',
+  fontSize: 16,
+  lineHeight: '24px',
   padding: 8,
   alignSelf: 'stretch',
   ':hover': {

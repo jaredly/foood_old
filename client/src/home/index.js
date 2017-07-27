@@ -18,6 +18,7 @@ const Home = ({history, data: {home, loading, error}}) => {
     flexDirection: 'row',
     alignItems: 'stretch',
     overflowX: 'auto',
+    flex: 1,
   }}>
       {home.homepageLists.map(l => (
         <div key={l.id} style={{

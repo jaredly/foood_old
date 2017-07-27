@@ -17,3 +17,13 @@ div {
 * {
   box-sizing: border-box;
 }
+
+textarea {
+  font-size: inherit;
+  font-family: inherit;
+}
+
+input {
+  font-size: inherit;
+  font-family: inherit;
+}

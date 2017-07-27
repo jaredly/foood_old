@@ -128,7 +128,7 @@ class Body extends Component {
       this.lastLocation !== location // not initial render
     )
 
-    return <div>
+    return <div style={{flex: 1, overflow: 'auto'}}>
       <Switch location={isModal ? this.lastLocation : location}>
         <Route exact path="/" component={Home} />
         <Route exact path="/recipes/" component={Recipes} />
@@ -160,7 +160,13 @@ class App extends Component {
     return (
       <ApolloProvider client={client}>
         <BrowserRouter>
-          <div className="App">
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}>
             <Header />
             <Route component={Body} />
           </div>
