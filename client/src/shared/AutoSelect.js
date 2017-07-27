@@ -15,6 +15,28 @@ const isAncestor = (parent, node) => {
 
 const onEnter = fn => e => e.key === 'Enter' || e.key === ' ' ? fn(e) : null
 
+const Container = glamorous.div({
+  position: 'relative',
+  cursor: 'pointer',
+  backgroundColor: 'white',
+})
+
+const Current = glamorous.div({
+  fontSize: 16,
+  padding: '8px 16px',
+  width: 200,
+  ':hover': {
+    backgroundColor: '#eee',
+  }
+})
+
+const Menu = glamorous.div({
+  backgroundColor: 'white',
+  boxShadow: '0 0 5px #aaa',
+  cursor: 'pointer',
+  borderRadius: 4,
+})
+
 export default class AutoSelect extends React.Component {
   state = {open: false}
 
@@ -43,7 +65,6 @@ export default class AutoSelect extends React.Component {
     if (isAncestor(this.menu, e.target)) {
       return
     }
-    console.log('not things', e.target, this.menu)
     e.preventDefault()
     e.stopPropagation()
     this.setState({open: false})
@@ -54,31 +75,14 @@ export default class AutoSelect extends React.Component {
     const {value, options, placeholder, addText, onAdd} = this.props
     const i = this.currentIndex()
     const name = i === null ? placeholder : options[i].name
-    return <Div
-      css={{
-        position: 'relative',
-        cursor: 'pointer',
-        backgroundColor: 'white',
-        // color: 'black',
-        // fontStyle: 'normal',
-      }}
-      ref={node => this.node = node}
-    >
-      <Div
+    return <Container innerRef={node => this.node = node}>
+      <Current
         onMouseDown={() => this.setState({open: !open})}
         onKeyDown={onEnter(() => this.setState({open: !open}))}
         tabIndex={0}
-        css={{
-          fontSize: 16,
-          padding: '8px 16px',
-          width: 200,
-          ':hover': {
-            backgroundColor: '#eee',
-          }
-        }}
       >
         {name}
-      </Div>
+      </Current>
       {this.state.open && 
       <Portal style={{
           position: 'absolute',
@@ -86,31 +90,14 @@ export default class AutoSelect extends React.Component {
           marginTop: 5,
           left: 0,
       }}>
-        <Div
+        <Menu
           innerRef={menu => this.menu = menu}
-          css={{
-            backgroundColor: 'white',
-            boxShadow: '0 0 5px #aaa',
-            cursor: 'pointer',
-            borderRadius: 4,
-          }}
         >
-          {options.map(option => (
-            <Option
-              key={option.id}
-              onMouseDown={
-                option.id === value
-                  ? () => this.setState({open: false})
-                  : () => {
-                    this.setState({open: false})
-                    this.props.onChange(option.id)
-                  }
-              }
-              tabIndex={0}
-            >
-              {option.name}
-            </Option>
-          ))}
+          {renderOptions(
+            options,
+            () => this.setState({open: false}),
+            this.props.onChange,
+          )}
           {addText && <Option
             onMouseDown={e => {
               this.setState({open: false})
@@ -123,11 +110,30 @@ export default class AutoSelect extends React.Component {
           >
             {addText}            
           </Option>}
-        </Div>
+        </Menu>
       </Portal>
       }
-    </Div>
+    </Container>
   }
+}
+
+const renderOptions = (options, onClose, onChange) => {
+  return options.map(option => (
+    <Option
+      key={option.id}
+      onMouseDown={
+        option.id === value
+          ? onClose
+          : () => {
+            onClose()
+            onChange(option.id)
+          }
+      }
+      tabIndex={0}
+    >
+      {option.name}
+    </Option>
+  ))
 }
 
 const Option = glamorous.div({

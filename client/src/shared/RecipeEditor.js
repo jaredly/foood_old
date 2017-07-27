@@ -49,13 +49,6 @@ const Dropdown = ({value, onChange, placeholder, options}) => {
     options={options}
     placeholder={placeholder}
   />
-
-  // return <select style={{flex: 1}} value={value || ''} onChange={e => {
-  //   onChange(e.target.value)    
-  // }}>
-  //   <glamorous.Option disabled css={{fontStyle: 'italic', color: '#aaa'}} value="">{placeholder}</glamorous.Option>
-  //   {options.map(({id, name, plural}) => <option key={id} value={id}>{plural || name}</option>)}
-  // </select>
 }
 
 const Row = div({flexDirection: 'row', alignItems: 'center'})
