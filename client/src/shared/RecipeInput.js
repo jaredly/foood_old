@@ -41,8 +41,15 @@ const RecipeInput = ({value, onChange, data: {error, loading, ingredients}}) => 
       value={value}
       onChange={onChange}
       options={ingredients}
-      onAdd={e => {
-        addIngredient(client, store, e.clientX, e.clientY, id => {
+      onAdd={(e, initialText) => {
+        let pos
+        if (e.clientX || e.clientY) {
+          pos = {x: e.clientX, y: e.clientY}
+        } else {
+          const box = e.target.getBoundingClientRect()
+          pos = {x: box.left, y: box.top}
+        }
+        addIngredient(initialText, client, store, pos.x, pos.y, id => {
           onChange(id)
         })
       }}
@@ -60,7 +67,7 @@ const isAncestor = (parent, node) => {
 }
 
 
-const addIngredient = (client, store, x, y, onDone) => {
+const addIngredient = (initialText, client, store, x, y, onDone) => {
   const node = document.createElement('div')
 
   const listen = e => {
@@ -96,6 +103,9 @@ const addIngredient = (client, store, x, y, onDone) => {
       <AddIngredient
         onDone={onDone}
         onClose={cleanup}
+        ingredient={{
+          name: initialText
+        }}
       />
     </div>
   </ApolloProvider>, node)

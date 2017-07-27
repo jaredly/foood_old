@@ -102,23 +102,28 @@ export default class AutoSelect extends React.Component {
 
   onKeyDown = e => {
     const {selectedIndex, filtered} = this.state
+    const max = filtered.length // not -1 b/c of the "add new" at the end
     switch (e.key) {
       case 'Enter':
         e.preventDefault()
         this.setState({open: false}) // maybe don't blur on close? idk
-        this.props.onChange(filtered[selectedIndex].id)
+        if (selectedIndex === filtered.length) {
+          this.props.onAdd(e, this.state.text)
+        } else {
+          this.props.onChange(filtered[selectedIndex].id)
+        }
         return
       case 'ArrowUp':
         e.preventDefault()
         return this.setState({
           selectedIndex: selectedIndex > 0
             ? selectedIndex - 1
-            : filtered.length - 1
+            : max
         })
       case 'ArrowDown':
         e.preventDefault()
         return this.setState({
-          selectedIndex: selectedIndex < filtered.length - 1
+          selectedIndex: selectedIndex < max
             ? selectedIndex + 1
             : 0
         })
@@ -140,6 +145,11 @@ export default class AutoSelect extends React.Component {
     })
   }
 
+  onSelect = id => {
+    this.setState({open: false})
+    this.props.onChange(id)
+  }
+
   renderMenu() {
     const {open, text, filtered} = this.state
     const {value, options, placeholder, addText, onAdd} = this.props
@@ -153,25 +163,24 @@ export default class AutoSelect extends React.Component {
       <Menu
         innerRef={menu => this.menu = menu}
       >
-        {renderOptions(
-          filtered,
-          this.state.selectedIndex,
-          value,
-          () => this.setState({open: false}),
-          this.props.onChange,
-        )}
-        {addText && <Option
-          onMouseDown={e => {
-            this.setState({open: false})
-            this.props.onAdd(e)
-          }}
-          css={{
+        {filtered.map((option, i) => (
+          renderOption(
+            option.id,
+            option.name,
+            i == this.state.selectedIndex,
+            () => this.onSelect(option.id),
+          )
+        ))}
+        {addText && renderOption(
+          '$add$',
+          addText,
+          this.state.selectedIndex === filtered.length,
+          onAdd,
+          {
             fontStyle: 'italic',
-            color: '#777',
-          }}
-        >
-          {addText}            
-        </Option>}
+            color: '#555',
+          }
+        )}
       </Menu>
     </Portal>
   }
@@ -216,31 +225,22 @@ class MaybeScrollIntoView extends React.Component {
   }
 }
 
-const renderOptions = (options, selectedIndex, value, onClose, onChange) => {
-  return options.map((option, i) => (
-    <MaybeScrollIntoView
-      active={i === selectedIndex}
-      key={option.id}
+const renderOption = (id, name, isSelected, onSelect, css) => {
+    return <MaybeScrollIntoView
+      active={isSelected}
+      key={id}
     >
     {ref => 
       <Option
         innerRef={ref}
-        onMouseDown={
-          option.id === value
-            ? onClose
-            : () => {
-              onClose()
-              onChange(option.id)
-            }
-        }
-        css={selectedIndex === i && {backgroundColor: '#eee'}}
+        onMouseDown={e => onSelect(e)}
+        css={[isSelected && {backgroundColor: '#eee'}, css]}
         tabIndex={0}
       >
-        {option.name}
+        {name}
       </Option>
     }
     </MaybeScrollIntoView>
-  ))
 }
 
 const Option = glamorous.div({

@@ -71,7 +71,7 @@ const AddIngredient = ({ingredient, addIngredient, onDone, onClose}) => {
       }}>
         Add Ingredient
       </Div>
-      <Input {...text('name')} autoselect placeholder='Name' />
+      <Input {...text('name')} autoFocus placeholder='Name' />
       <Input {...text('plural')} placeholder='Plural (optional)' />
       <Input {...text('defaultUnit')} placeholder='Default unit' />
       <Div css={{flexDirection: 'row'}}>
