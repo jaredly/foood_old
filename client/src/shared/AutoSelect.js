@@ -5,6 +5,7 @@ import {
 
 import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
 import Portal from './Portal'
+import ensureInView from './ensureInView'
 
 const isAncestor = (parent, node) => {
   while (node && node !== document.body) {
@@ -83,7 +84,7 @@ export default class AutoSelect extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.open && !this.state.open) {
-      this.input.blur()
+      // this.input.blur()
     }
   }
 
@@ -102,15 +103,20 @@ export default class AutoSelect extends React.Component {
   onKeyDown = e => {
     const {selectedIndex, filtered} = this.state
     switch (e.key) {
+      case 'Enter':
+        e.preventDefault()
+        this.setState({open: false}) // maybe don't blur on close? idk
+        this.props.onChange(filtered[selectedIndex].id)
+        return
       case 'ArrowUp':
-      e.preventDefault()
+        e.preventDefault()
         return this.setState({
           selectedIndex: selectedIndex > 0
             ? selectedIndex - 1
             : filtered.length - 1
         })
       case 'ArrowDown':
-      e.preventDefault()
+        e.preventDefault()
         return this.setState({
           selectedIndex: selectedIndex < filtered.length - 1
             ? selectedIndex + 1
@@ -129,6 +135,7 @@ export default class AutoSelect extends React.Component {
     }) : options
     this.setState({
       filtered,
+      open: true,
       text,
     })
   }
@@ -197,23 +204,42 @@ export default class AutoSelect extends React.Component {
   }
 }
 
+class MaybeScrollIntoView extends React.Component {
+  componentDidUpdate(prevProps) {
+    if (!prevProps.active && this.props.active) {
+      ensureInView(this.node, true, 50)
+    }
+  }
+
+  render() {
+    return this.props.children(node => this.node = node)
+  }
+}
+
 const renderOptions = (options, selectedIndex, value, onClose, onChange) => {
   return options.map((option, i) => (
-    <Option
+    <MaybeScrollIntoView
+      active={i === selectedIndex}
       key={option.id}
-      onMouseDown={
-        option.id === value
-          ? onClose
-          : () => {
-            onClose()
-            onChange(option.id)
-          }
-      }
-      css={selectedIndex === i && {backgroundColor: '#eee'}}
-      tabIndex={0}
     >
-      {option.name}
-    </Option>
+    {ref => 
+      <Option
+        innerRef={ref}
+        onMouseDown={
+          option.id === value
+            ? onClose
+            : () => {
+              onClose()
+              onChange(option.id)
+            }
+        }
+        css={selectedIndex === i && {backgroundColor: '#eee'}}
+        tabIndex={0}
+      >
+        {option.name}
+      </Option>
+    }
+    </MaybeScrollIntoView>
   ))
 }
 
