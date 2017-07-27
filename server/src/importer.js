@@ -66,7 +66,8 @@ const parseUnit = (amount, text) => {
         return {
           amount,
           unit,
-          rest: text.slice(unit.length).trim(),
+          ingredient: null,
+          comments: text.slice(unit.length).trim(),
         }
       }
     }
@@ -75,7 +76,8 @@ const parseUnit = (amount, text) => {
   return {
     amount,
     unit: null,
-    rest: text.trim(),
+    ingredient: null,
+    comments: text.trim(),
   }
 }
 
@@ -104,7 +106,8 @@ const parseIngredient = text => {
   return {
     amount: null,
     unit: null,
-    rest: text.trim(),
+    ingredient: null,
+    comments: text.trim(),
   }
 }
 

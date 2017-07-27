@@ -69,7 +69,7 @@ const SourceInput = glamorous.input({
   marginLeft: 5,
   fontSize: 12,
   border: 'none',
-  padding: 5,
+  padding: 4,
   borderBottom: '1px solid #aaa',
   flex: 1,
 })
@@ -89,7 +89,7 @@ const Description = glamorous(GrowingTextarea)({
   fontSize: 10,
   fontStyle: 'italic',
   border: '1px solid #ddd',
-  padding: 10,
+  padding: 8,
   flexShrink: 0,
 })
 
@@ -110,11 +110,11 @@ const validate = ({title, ingredients, instructions}) => {
 
 const RecipeEditor = ({recipe, onAction, action, onDone}) => {
   return <Form initial={recipe}>
-    {({text, float, bool, list, toggle, set}, data, isModified) => (
+    {({text, float, bool, list, toggle, set, setMany}, data, isModified) => (
       <Div css={{flex: 1}}>
         <Row css={{
             borderBottom: '1px solid #aaa',
-            marginBottom: 5,
+            marginBottom: 8,
         }}>
           <Title {...text('title')} placeholder="Title" />
           <TopButton onClick={() => {
@@ -142,7 +142,7 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
           {data.error}
           <Row css={{fontSize: 10}}>
             <Row
-              css={{fontSize: 10, marginRight: 20}}
+              css={{fontSize: 10, marginRight: 16}}
               onClick={() => toggle('isPublic', true)}
             >
               <input type="checkbox" {...bool('isPublic', true)} />
@@ -158,25 +158,75 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
           <Label>Instructions</Label>
           {list(instructionsList)}
         </Div>
-        <Div
-        >
-          Import from URL:
-          <input onPaste={e => {
-            e.clipboardData.items[0].getAsString(url => {
-              fetch('http://localhost:4000/import?url=' + encodeURIComponent(url))
-              .then(r => r.json())
-              .then(res => console.log('done', res))
+        <Importer
+          onDone={(url, recipe) => {
+            setMany({
+              source: url,
+              ...recipe,
+              instructions: recipe.instructions.map(text => ({text, ingredientsUsed: []})),
             })
-          }} />
-        </Div>
+          }}
+        />
       </Div>
     )}
   </Form>
 }
 
+class Importer extends React.Component {
+  state = {loading: false}
+
+  onPaste = e => {
+    e.clipboardData.items[0].getAsString(url => {
+      this.setState({loading: url})
+      fetch('http://localhost:4000/import?url=' + encodeURIComponent(url))
+      .then(r => r.json())
+      .then(res => {
+        this.setState({loading: false})
+        console.log('done', res)
+        this.props.onDone(url, res)
+      })
+    })
+  }
+
+  render() {
+    if (this.state.loading) {
+      return <Div
+        css={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 8,
+          marginLeft: 8,
+        }}
+      >
+        Importing from {this.state.loading}
+      </Div>
+    }
+
+    return <Div
+      css={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 8,
+        marginLeft: 8,
+      }}
+    >
+      Import from URL:
+      <Input
+        css={{
+          padding: 8,
+          marginLeft: 16,
+          fontSize: 16,
+        }}
+        onPaste={this.onPaste}
+        value=''
+      />
+    </Div>
+  }
+}
+
 const ingredientsList = {
   name: 'ingredients',
-  blank: () => ({amount: 1, ingredient: null, unit: ''}),
+  blank: () => ({amount: 1, ingredient: null, unit: '', comments: ''}),
   container: ({children, add}) => <Div
     children={children}
     css={{
@@ -274,7 +324,7 @@ const instructionsList = {
 }
 
 const AmountInput = glamorous.input({
-  width: 40,
+  width: 80,
   fontSize: 14,
   backgroundColor: 'transparent',
   color: 'currentColor',

@@ -54,7 +54,7 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
     instructions,
   } = recipe
 
-  return <div>
+  return <div style={{flex: 1}}>
     <div style={{
       borderBottom: '1px solid #aaa',
       flexDirection: 'row',
@@ -79,6 +79,10 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
       </TopButton>}
     </div>
 
+    <div style={{
+      flex: 1,
+      overflow: 'auto',
+    }}>
     <Section style={{
       fontStyle: 'italic',
       color: '#777',
@@ -122,6 +126,7 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
         ))}
       </ol>
     </Section>}
+    </div>
   </div>
 }
 
