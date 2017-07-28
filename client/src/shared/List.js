@@ -40,18 +40,20 @@ export const ListView = ({id, list}) => {
         search: `?target=${id}`,
         state: {modal: true}
       }}>
-      <Div css={{
-        padding: 8,
-        ':hover': {
-          backgroundColor: '#eee',
-        }
-      }}>
-        <Plus/>
+        <Div css={{
+          padding: 8,
+          ':hover': {
+            backgroundColor: '#eee',
+          }
+        }}>
+          <Plus/>
         </Div>
       </Link>
     </div>
 
-    <div style={{flex: 1, overflow: 'auto',
+    <div style={{
+      flex: 1,
+      overflow: 'auto',
     }}>
       {recipes.map(r => (
         <Link

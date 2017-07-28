@@ -192,10 +192,15 @@ type Message {
   text: String
 }
 
-# type LoginPayload {
-  # authId: String
-  # userId: String
-# }
+type ListInput {
+  isPrivate: Boolean
+  editors: [ID!]!
+  title: String!
+  recipes: [ID!]!
+}
+
+
+
 
 # This type specifies the entry points into our API
 type Query {
@@ -215,12 +220,18 @@ type Query {
   channel(id: ID!): Channel
 }
 
+
+
+
+
 # The mutation root type, used to define all mutations
 type Mutation {
   addRecipe(recipe: RecipeInput!): Recipe!
   updateRecipe(id: ID!, recipe: RecipeInput!): Recipe!
 
-  addList(title: String!, isPrivate: Boolean, recipes: [ID!]!, editors: [ID!]!): List!
+  addList(list: ListInput!): List!
+  updateList(id: ID!, list: ListInput!): List!
+
   addTag(title: String!): Tag!
   addIngredient(ingredient: IngredientInput!): Ingredient!
 

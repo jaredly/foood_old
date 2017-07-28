@@ -15,6 +15,7 @@ import Modal from './shared/Modal'
 import AddRecipe from './shared/AddRecipe'
 import Lists from './pages/Lists'
 import ListPage from './pages/List'
+import AddListPage from './pages/AddList'
 
 import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
@@ -136,6 +137,7 @@ class Body extends Component {
         <Route path="/recipe/:id" component={Recipe} />
         <Route path="/add" component={AddRecipe} />
         <Route path="/lists/" component={Lists} />
+        <Route path="/list/new" component={AddListPage} />
         <Route path="/list/:id" component={ListPage} />
         <Route component={NotFound} />
       </Switch>
