@@ -192,9 +192,9 @@ type Message {
   text: String
 }
 
-type ListInput {
+input ListInput {
   isPrivate: Boolean
-  editors: [ID!]!
+  # editors: [ID!]!
   title: String!
   recipes: [ID!]!
 }
@@ -213,6 +213,8 @@ type Query {
   user(id: ID!): User!
   recipe(id: ID!): Recipe!
   list(id: ID!): List!
+
+  recipes: [Recipe!]!
 
   ingredients: [Ingredient!]!
 

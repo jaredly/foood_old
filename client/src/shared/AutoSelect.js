@@ -41,11 +41,19 @@ const Menu = glamorous.div({
 })
 
 export default class AutoSelect extends React.Component {
+  props: {
+    options: Array<any>,
+    value: any,
+    onAdd: ?() => void,
+    onChange: () => void,
+    getName: () => string,
+  }
+
   constructor(props) {
     super()
 
     const i = this.currentIndex(props)
-    const name = i === null ? '' : props.options[i].name
+    const name = i === null ? '' : props.getName(props.options[i])
     this.state = {
       open: false,
       text: name,
@@ -65,12 +73,18 @@ export default class AutoSelect extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    let text = this.state.text
     if (nextProps.value !== this.props.value) {
       const i = this.currentIndex(nextProps)
-      const name = i === null ? null : nextProps.options[i].name
+      const name = i === null ? null : nextProps.getName(nextProps.options[i])
+      text = name
       if (name) {
         this.setState({text: name})
       }
+    }
+    if (nextProps.options !== this.props.options) {
+      const filtered = this.search(text, nextProps.options)
+      this.setState({filtered})
     }
   }
 
@@ -134,15 +148,21 @@ export default class AutoSelect extends React.Component {
     }
   }
 
-  setText(text) {
-    const {options} = this.props
-    this.props.onChange(null)
-
-    const filtered = text ? options.filter(option => {
-      return option.name.toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
+  search(text, options) {
+    const {getName} = this.props
+    return text ? options.filter(option => {
+      return getName(option).toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
         (option.plural &&
           option.plural.toLowerCase().indexOf(text.toLowerCase()) !== -1)
     }) : options
+  }
+
+  setText(text) {
+    const {options, getName} = this.props
+    this.props.onChange(null)
+
+    const filtered = this.search(text, options)
+
     this.setState({
       filtered,
       open: true,
@@ -157,7 +177,7 @@ export default class AutoSelect extends React.Component {
 
   renderMenu() {
     const {open, text, filtered} = this.state
-    const {value, options, placeholder, addText, onAdd} = this.props
+    const {getName, value, options, placeholder, addText, onAdd} = this.props
 
     return <Portal style={{
         position: 'absolute',
@@ -171,7 +191,7 @@ export default class AutoSelect extends React.Component {
         {filtered.map((option, i) => (
           renderOption(
             option.id,
-            option.name,
+            getName(option),
             i == this.state.selectedIndex,
             () => this.onSelect(option.id),
           )

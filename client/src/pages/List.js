@@ -9,6 +9,7 @@ import {
 } from 'react-apollo';
 
 import {ListView, listFragment} from '../shared/List'
+import FullListEditor from '../shared/FullListEditor'
 
 class ListPage extends React.Component {
   constructor() {
@@ -20,17 +21,34 @@ class ListPage extends React.Component {
   }
 
   render() {
-    const {id, history, data: {list, loading, error}} = this.props
+    const {match: {params: {id}}, history, data: {list, loading, error}} = this.props
     if (error) return <div>{JSON.stringify(error, null, 2)} error</div>
     if (loading) return <div>loading</div>
-    // const {updated, author: {id, name}, title, recipes} = list;
+
+    if (this.state.editing) {
+      return <div style={{
+        alignItems: 'center',
+        padding: 10,
+        overflowX: 'auto',
+      }}>
+         <FullListEditor
+          id={id}
+          list={list}
+          onDone={() => this.setState({editing: false})}
+        /> 
+      </div>
+    }
 
     return <div style={{
       alignItems: 'center',
       padding: 10,
       overflowX: 'auto',
     }}>
-      <ListView id={id} list={list} />
+      <ListView
+        id={id}
+        list={list}
+        onEdit={() => this.setState({editing: true})}
+      />
     </div>
   }
 }

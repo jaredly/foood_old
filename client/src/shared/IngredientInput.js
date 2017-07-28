@@ -40,6 +40,7 @@ const IngredientInput = ({value, onChange, data: {error, loading, ingredients}})
     {(client, store) => <AutoSelect
       value={value}
       onChange={onChange}
+      getName={option => option.name}
       options={ingredients}
       onAdd={(e, initialText) => {
         let pos

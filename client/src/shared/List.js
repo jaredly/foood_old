@@ -12,8 +12,20 @@ import glamorous, {Div} from 'glamorous'
 
 import RecipeCard from './RecipeCard'
 
-export const ListView = ({id, list}) => {
+export const ListView = ({id, list, onEdit}) => {
   const {updated, author, title, recipes} = list
+
+  let titleNode = <Div css={{
+    marginLeft: 8,
+  }}>
+    {title} (updated {new Date(updated).toLocaleDateString()})
+  </Div>
+
+  if (id) {
+    titleNode = <Link to={"/list/" + id }>
+      {titleNode}
+    </Link>
+  }
 
   return <div style={{
     boxShadow: '0 0 3px #aaa',
@@ -27,14 +39,15 @@ export const ListView = ({id, list}) => {
       boxShadow: '0 2px 2px #aaa ',
       zIndex: 1,
     }}>
-      <Link to={"/list/" + id }>
-        <Div css={{
-          marginLeft: 8,
-        }}>
-          {title} (updated {new Date(updated).toLocaleDateString()})
-        </Div>
-      </Link>
+      {titleNode}
       <div style={{flex: 1}} />
+      {onEdit && <Div
+        css={{
+          cursor: 'pointer',
+          padding: 8,
+        }}
+        onClick={onEdit}
+      >Edit</Div>}
       <Link to={{
         pathname: "/add",
         search: `?target=${id}`,
@@ -99,7 +112,8 @@ fragment ListFragment on List {
   title
   # TODO paging
   recipes {
-    id      
+    id
+    title
   }
 }
 `

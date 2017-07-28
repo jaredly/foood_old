@@ -60,6 +60,7 @@ export default class Form extends Component {
     }),
     bool: (name, default_=false) => ({
       checked: this.state.data[name] == null ? default_ : this.state.data[name],
+      type: 'checkbox',
       onChange: e => this.setValue(name, e.target.checked),
     }),
     toggle: (name, default_=false) => this.setState(({data}) => ({

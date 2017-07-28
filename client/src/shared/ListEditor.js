@@ -9,9 +9,8 @@ import Close from 'react-icons/lib/io/ios-close-empty'
 import IngredientInput from './IngredientInput'
 import GrowingTextarea from './GrowingTextarea'
 
-import AutoSelect from './AutoSelect'
+import RecipeSelector from './RecipeSelector'
 import Form from './formative'
-import RecipeImporter from './RecipeImporter'
 
 const {div} = glamorous
 
@@ -28,30 +27,12 @@ const {div} = glamorous
 // also for lists, it's nice to be able to have it add things to the list
 // w/ a good null state
 
-const Dropdown = ({value, onChange, placeholder, options}) => {
-  return <AutoSelect
-    value={value}
-    onChange={onChange}
-    options={options}
-    placeholder={placeholder}
-  />
-}
-
 const Row = div({flexDirection: 'row', alignItems: 'center'})
 
 const Label = div({fontSize: 12, marginBottom: 5, marginTop: 15})
 
 const Spring = div({flex: 1})
 const Strut = ({size}) => <div style={{flexBasis: size}} />
-
-const SourceInput = glamorous.input({
-  marginLeft: 5,
-  fontSize: 12,
-  border: 'none',
-  padding: 4,
-  borderBottom: '1px solid #aaa',
-  flex: 1,
-})
 
 const TopButton = glamorous.button({
   cursor: 'pointer',
@@ -64,38 +45,24 @@ const TopButton = glamorous.button({
   }
 })
 
-const Description = glamorous(GrowingTextarea)({
-  fontSize: 16,
-  fontStyle: 'italic',
-  border: '1px solid #ddd',
-  padding: 8,
-  flexShrink: 0,
-})
 
-const Title = glamorous.input({
-  fontSize: 20,
-  fontWeight: 'bold',
-  border: 'none',
-  flex: 1,
-  padding: '8px 16px',
-  backgroundColor: 'transparent',
-})
-
-const validate = ({title, ingredients, instructions}) => {
+const validate = ({title}) => {
   if (!title) return 'Title is required'
   // if (!ingredients.length) return 'Must have at least one ingredient'
   // if (!instructions.length) return 'Must have at least one instruction'
 }
 
-const RecipeEditor = ({list, onAction, action, onDone}) => {
+const ListEditor = ({list, onAction, action, onDone}) => {
   return <Form initial={list}>
     {({text, float, bool, list, toggle, set, setMany}, data, isModified) => (
-      <Div css={{flex: 1}}>
+      <Div css={{flex: 1, backgroundColor: 'white', width: 500}}>
+        {JSON.stringify(data.error)}
         <Row css={{
             borderBottom: '1px solid #aaa',
             marginBottom: 8,
         }}>
-          <Title {...text('title')} autoFocus placeholder="Title" />
+          <Input {...text('title')} autoFocus placeholder="Title" />
+          <div style={{flex: 1}} />
           <TopButton onClick={() => {
             if (!isModified) return onDone()
             const error = validate(data)
@@ -117,26 +84,46 @@ const RecipeEditor = ({list, onAction, action, onDone}) => {
             <Close size={46} color="gray" />
           </TopButton>
         </Row>
-        <Div css={{padding: '10px 20px', flex: 1, overflow: 'auto'}}>
-          {data.error}
-          {miscRow(text, float)}
-          <Strut size={8} />
-          {sourceRow(bool, text, toggle)}
-          <Label>Description</Label>
-          <Description {...text('description')} />
-          <Label>Ingredients</Label>
-          {list(ingredientsList)}
-          <Label>Instructions</Label>
-          {list(instructionsList)}
-        </Div>
-        <RecipeImporter
-          onDone={recipe => {
-            setMany(recipe)
-          }}
+        <Strut size={16} />
+        <Row>
+          <Input {...bool('isPrivate')} /> private
+        </Row>
+        <Strut size={16} />
+
+        <RecipeSelector
+          current={data.recipes}
+          onSelect={({id, title}) => set('recipes', data.recipes.concat([{id, title}]))}
         />
+
+        <Strut size={16} />
+        <Div css={{padding: '10px 20px', flex: 1, overflow: 'auto'}}>
+          {/* TODO editors */}
+          {(data.recipes || []).map(({id, title}, i) => (
+            <Row key={id}>
+              <Div css={{
+                padding: '8px 16px',
+              }}>
+              {title}
+              </Div>
+              <div style={{flex: 1}} />
+              <Div
+                css={{
+                  padding: 8,
+                  cursor: 'pointer',
+                  ':hover': {
+                    backgroundColor: '#eee',
+                  }
+                }}
+                onClick={() => set('recipes', data.recipes.filter(rid => rid.id !== id))}
+              >
+                <Close />
+              </Div>
+            </Row>
+          ))}
+        </Div>
       </Div>
     )}
   </Form>
 }
 
-export default RecipeEditor
+export default ListEditor
