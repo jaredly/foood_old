@@ -68,6 +68,7 @@ export const ListView = ({id, list, onEdit}) => {
       flex: 1,
       overflow: 'auto',
     }}>
+      {!recipes.length && <div style={{padding: 16}}>No recipes in this list</div>}
       {recipes.map(r => (
         <Link
           to={{pathname: "/recipe/" + r.id, state: {modal: true}}}

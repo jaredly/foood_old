@@ -11,6 +11,7 @@ import {
 
 import ListEditor from '../shared/ListEditor'
 import {listFragment} from '../shared/List'
+import {listsQuery} from '../pages/Lists'
 
 const AddList = ({
   match: {params: {id}},
@@ -20,10 +21,19 @@ const AddList = ({
   addListMutation,
 }) => {
   const body = <ListEditor
-    list={null}
+    list={{
+      title: '',
+      recipes: [],
+      // editors: [],
+    }}
     action="Create"
     onAction={({error, loading, ...list}) =>
-      addListMutation({variables: {list}})
+      addListMutation({
+        variables: {list},
+        refetchQueries: [{
+          query: listsQuery,
+        }]
+      })
         .then(history.push('/lists/'))
     }
     onDone={() => history.push('/lists/')}

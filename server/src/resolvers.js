@@ -112,18 +112,20 @@ export const resolvers = {
 
     // TODO more atomic recipe editing. like modifying individual stuffs
 
-    addList: (_, {list: {title, isPrivate, recipes, editors}}, {currentUser, db}) => {
+    addList: (_, {list: {title, isPrivate, recipes}}, {currentUser, db}) => {
       const id = uuid()
-      return db.set('lists', id, {
+      const res = db.set('lists', id, {
         id,
         title,
         isPrivate,
         recipes,
-        editors,
-        author: currentUser,
+        editors: [], // TODO
+        authorId: currentUser,
         created: Date.now(),
         updated: Date.now(),
       })
+      console.log('res', res)
+      return res
     },
 
     updateList: (_, {id, list}, {currentUser, db}) => {

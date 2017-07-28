@@ -40,8 +40,10 @@ class ListPage extends React.Component {
     }
 
     return <div style={{
-      alignItems: 'center',
+      alignItems: 'stretch',
+      alignSelf: 'center',
       padding: 10,
+      width: 600,
       overflowX: 'auto',
     }}>
       <ListView
