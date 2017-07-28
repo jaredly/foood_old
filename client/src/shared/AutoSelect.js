@@ -113,6 +113,10 @@ export default class AutoSelect extends React.Component {
           this.props.onChange(filtered[selectedIndex].id)
         }
         return
+      case 'Escape':
+        e.preventDefault()
+        this.setState({open: false})
+        return
       case 'ArrowUp':
         e.preventDefault()
         return this.setState({
@@ -132,6 +136,7 @@ export default class AutoSelect extends React.Component {
 
   setText(text) {
     const {options} = this.props
+    this.props.onChange(null)
 
     const filtered = text ? options.filter(option => {
       return option.name.toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
@@ -193,10 +198,14 @@ export default class AutoSelect extends React.Component {
     return <Container innerRef={node => this.node = node}>
       <Input
         value={text}
-        style={{
+        css={{
           padding: 8,
           fontSize: 16,
           border: 'none',
+          ':hover': {
+            outline: '1px solid #aaa',
+            zIndex: 1,
+          }
         }}
         onChange={e => this.setText(e.target.value)}
         onKeyDown={this.onKeyDown}

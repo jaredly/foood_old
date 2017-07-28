@@ -119,6 +119,7 @@ type Ingredient {
   name: String!
   plural: String
   defaultUnit: String
+  alternativeNames: [String!]
   created: Float!
 
   calories: Float # per 100g
@@ -153,6 +154,8 @@ input RecipeInput {
   ingredients: [RecipeIngredientInput!]!
   # ingredientGroups maybe
   description: String!
+  yield: Int
+  yieldUnit: String
   cookTime: Int
   prepTime: Int
   totalTime: Int

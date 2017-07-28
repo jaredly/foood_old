@@ -22,7 +22,7 @@ const Recipes = ({history, data: {home, loading, error}}) => {
         <Link
           to={{pathname: "/recipe/" + r.id, state: {modal: true}}}
           style={{
-            width: 300,
+            width: 600,
             margin: 10,
             boxShadow: '0 0 3px #aaa',
             backgroundColor: 'white',

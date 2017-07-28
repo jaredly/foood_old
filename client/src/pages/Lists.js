@@ -24,6 +24,7 @@ const Lists = ({history, data: {home, loading, error}}) => {
           style={{
             width: 500,
             margin: 10,
+            maxHeight: 500,
             // cursor: 'pointer',
           }}
           key={l.id}

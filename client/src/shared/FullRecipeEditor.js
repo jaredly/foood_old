@@ -40,14 +40,17 @@ const FullRecipeEditor = ({
   />
 }
 
-const stripRecipe = ({title, tags, source, description, cookTime, prepTime, totalTime, ovemTemp, instructions, ingredients}) => ({
+const stripRecipe = ({title, tags, source, description, 'yield': yield_, yieldUnit, cookTime, prepTime, totalTime, ovenTemp, instructions, ingredients}) => ({
   title,
   tags: tags.map(tag => tag.id),
   source,
   description,
+  'yield': yield_,
+  yieldUnit,
   cookTime,
   prepTime,
   totalTime,
+  ovenTemp,
   ingredients: ingredients.map(({id, ingredient, amount, unit, comments}) => ({
     id,
     ingredient: ingredient.id, amount, unit, comments,

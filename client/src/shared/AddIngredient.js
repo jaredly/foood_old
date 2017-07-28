@@ -13,7 +13,7 @@ import Form from './formative'
 import Checkmark from 'react-icons/lib/io/ios-checkmark-empty'
 import Close from 'react-icons/lib/io/ios-close-empty'
 
-import {ingredientsQuery} from './RecipeInput'
+import {ingredientsQuery} from './IngredientInput'
 import Modal from '../shared/Modal'
 import {listFragment, listQuery} from '../shared/List'
 

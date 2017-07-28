@@ -6,28 +6,14 @@ import {
 import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
 import Checkmark from 'react-icons/lib/io/ios-checkmark-empty'
 import Close from 'react-icons/lib/io/ios-close-empty'
-import RecipeInput from './RecipeInput'
+import IngredientInput from './IngredientInput'
 import GrowingTextarea from './GrowingTextarea'
 
 import AutoSelect from './AutoSelect'
 import Form from './formative'
+import RecipeImporter from './RecipeImporter'
 
 const {div} = glamorous
-
-const ingredients = [{
-  id: '2',
-  name: 'egg',
-  plural: 'eggs',
-}, {
-  id: '3',
-  name: 'milk',
-}, {
-  id: '4',
-  name: 'whole wheat flour',
-}, {
-  id: '5',
-  name: 'olive oil',
-}];
 
 // Soooo the main reason for making this state-holding component is that
 // making component state is annoying.
@@ -109,7 +95,7 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
             borderBottom: '1px solid #aaa',
             marginBottom: 8,
         }}>
-          <Title {...text('title')} placeholder="Title" />
+          <Title {...text('title')} autoFocus placeholder="Title" />
           <TopButton onClick={() => {
             if (!isModified) return onDone()
             const error = validate(data)
@@ -133,17 +119,9 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
         </Row>
         <Div css={{padding: '10px 20px', flex: 1, overflow: 'auto'}}>
           {data.error}
-          <Row css={{fontSize: 10}}>
-            <Row
-              css={{fontSize: 10, marginRight: 16}}
-              onClick={() => toggle('isPublic', true)}
-            >
-              <input type="checkbox" {...bool('isPublic', true)} />
-              is public
-            </Row>
-            Source
-            <SourceInput {...text('source')} placeholder="(url or text)" />
-          </Row>
+          {miscRow(text, float)}
+          <Strut size={8} />
+          {sourceRow(bool, text, toggle)}
           <Label>Description</Label>
           <Description {...text('description')} />
           <Label>Ingredients</Label>
@@ -151,13 +129,9 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
           <Label>Instructions</Label>
           {list(instructionsList)}
         </Div>
-        <Importer
-          onDone={(url, recipe) => {
-            setMany({
-              source: url,
-              ...recipe,
-              instructions: recipe.instructions.map(text => ({text, ingredientsUsed: []})),
-            })
+        <RecipeImporter
+          onDone={recipe => {
+            setMany(recipe)
           }}
         />
       </Div>
@@ -165,58 +139,55 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
   </Form>
 }
 
-class Importer extends React.Component {
-  state = {loading: false}
+const miscRow = (text, float) => <Row css={{fontSize: 12}}>
+  Yield
+  <Strut size={8} />
+  <Input {...float('yield', '')}
+  css={{width: 50}}
+  />
+  <Strut size={16} />
+  Unit
+  <Strut size={8} />
+  <Input {...text('yieldUnit', '')}
+  css={{width: 50}}
+  />
+  <Strut size={16} />
+  Prep time (minutes)
+  <Strut size={8} />
+  <Input {...float('prepTime', '')}
+  css={{width: 50}}
+  />
+  <Strut size={16} />
+  Cook time (minutes)
+  <Strut size={8} />
+  <Input {...float('cookTime', '')}
+  css={{width: 50}}
+  />
+  <Strut size={16} />
+  Total time (minutes)
+  <Strut size={8} />
+  <Input {...float('totalTime', '')}
+  css={{width: 50}}
+  />
+  <Strut size={16} />
+  Oven Temp (˚F)
+  <Strut size={8} />
+  <Input {...float('ovenTemp', '')}
+  css={{width: 50}}
+  />
+</Row>
 
-  onPaste = e => {
-    e.clipboardData.items[0].getAsString(url => {
-      this.setState({loading: url})
-      fetch('http://localhost:4000/import?url=' + encodeURIComponent(url))
-      .then(r => r.json())
-      .then(res => {
-        this.setState({loading: false})
-        console.log('done', res)
-        this.props.onDone(url, res)
-      })
-    })
-  }
-
-  render() {
-    if (this.state.loading) {
-      return <Div
-        css={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 8,
-          marginLeft: 8,
-        }}
-      >
-        Importing from {this.state.loading}
-      </Div>
-    }
-
-    return <Div
-      css={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 8,
-        marginLeft: 8,
-      }}
-    >
-      Import from URL
-      <Input
-        css={{
-          padding: 8,
-          marginLeft: 16,
-          fontSize: 16,
-          flex: 1,
-        }}
-        onPaste={this.onPaste}
-        value=''
-      />
-    </Div>
-  }
-}
+const sourceRow = (bool, text, toggle) => <Row css={{fontSize: 10}}>
+  <Row
+    css={{marginRight: 16}}
+    onClick={() => toggle('isPublic', true)}
+  >
+    <input type="checkbox" {...bool('isPublic', true)} />
+    is public
+  </Row>
+  Source
+  <SourceInput {...text('source')} placeholder="(url or text)" />
+</Row>
 
 const ingredientsList = {
   name: 'ingredients',
@@ -247,14 +218,9 @@ const ingredientsList = {
       <AmountInput onFocus={selectAll} {...float('amount', 1)} placeholder="Amount" />
       {/* TODO defaultunit? */}
       <UnitInput onFocus={selectAll} {...text('unit')} placeholder="Unit" />
-      <RecipeInput
+      <IngredientInput
         {...custom('ingredient')}
       />
-      {/* <Dropdown
-        {...custom('ingredient')}
-        placeholder="Ingredient"
-        options={ingredients}
-      /> */}
       <IngredientCommentsInput 
         onFocus={selectAll}
         {...text('comments')}
@@ -271,8 +237,6 @@ const ingredientsList = {
 
 const selectAll = e => {
   e.target.select()
-  // e.target.selectionStart = 0
-  // e.target.selectionEnd = e.target.value.length
 }
 
 const instructionsList = {

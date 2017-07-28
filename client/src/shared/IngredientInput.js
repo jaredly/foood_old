@@ -33,7 +33,7 @@ class ApolloClient extends React.Component {
   }
 }
 
-const RecipeInput = ({value, onChange, data: {error, loading, ingredients}}) => {
+const IngredientInput = ({value, onChange, data: {error, loading, ingredients}}) => {
   if (error) return <div>Error</div>
   if (loading) return <div>Loading</div>
   return <ApolloClient>
@@ -54,7 +54,7 @@ const RecipeInput = ({value, onChange, data: {error, loading, ingredients}}) => 
         })
       }}
       addText='New ingredient'
-      placeholder='Ingredient'
+      placeholder='Add Ingredient'
     />}
   </ApolloClient>
 }
@@ -127,4 +127,4 @@ export default graphql(ingredientsQuery, {
   //   // pollInterval: 60 * 1000,
   //   variables: {id},
   // })
-})(RecipeInput)
+})(IngredientInput)

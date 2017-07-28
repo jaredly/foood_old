@@ -28,12 +28,29 @@ const Title = glamorous.div({
 })
 
 const SubTitle = glamorous.div({
-  fontSize: 18,
+  fontSize: 16,
+  fontWeight: 'bold',
 })
 
 const Section = glamorous.div({
-  padding: 16,
+  padding: '0 16px',
 })
+
+const linkRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi;
+
+const maybePrefix = text => text.match(/^http/) ? text : 'http://' + text
+
+const linkify = source => {
+  if (!source) return null
+  const match = source.match(linkRegex)
+  if (!match) return source
+  const index = source.indexOf(match[0])
+  return [
+    source.slice(0, index),
+    <a key="aa" style={{color: 'blue'}} target="_blank" href={maybePrefix(match[0])}>source</a>,
+    source.slice(index + match[0].length),
+  ]
+}
 
 export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
   const {
@@ -45,13 +62,14 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
     updated,
     tags,
     source,
-    ['yield']: yield_,
+    'yield': yield_,
     yieldUnit,
     cookTime,
     prepTime,
     totalTime,
     ingredients,
     instructions,
+    ovenTemp,
   } = recipe
 
   return <div style={{flex: 1}}>
@@ -83,6 +101,7 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
       flex: 1,
       overflow: 'auto',
     }}>
+    <Strut size={16} />
     <Section style={{
       fontStyle: 'italic',
       color: '#777',
@@ -90,10 +109,13 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
     }}>
       {description}
     </Section>
+    <Strut size={16} />
+    {miscRow({source, ovenTemp, cookTime, prepTime, totalTime, yieldUnit, 'yield': yield_})}
+    {/* {source && <div style={{padding: '8px 16px', fontSize: 12}}>{linkify(source)}</div>} */}
     <Section>
       <SubTitle>Ingredients</SubTitle>
+      <Strut size={16} />
       <div style={{
-        margin: '16px 0px',
         display: 'grid',
         gridTemplateColumns: 'max-content max-content max-content',
         gridGap: '8px 8px',
@@ -116,9 +138,11 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
       ))}
       </div>
     </Section>
+    <Strut size={24} />
     {expanded && <Section>
       <SubTitle>Instructions</SubTitle>
-        <ol style={{margin: 16, paddingLeft: 8}}>
+      <Strut size={8} />
+      <ol style={{margin: 0, paddingLeft: 24}}>
         {instructions.map(({text, ingredientsUsed}, i) => (
           <li key={i} style={{
             padding: '4px 8px',
@@ -129,9 +153,46 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
           </li>
         ))}
       </ol>
+      <Strut size={24} />
     </Section>}
     </div>
   </div>
+}
+
+const interspersed = (list, maker) => {
+  const res = []
+  list.forEach((item, i) => {
+    if (i !== 0) {
+      res.push(maker(i))
+    }
+    res.push(item)
+  })
+  return res
+}
+
+const Row = glamorous.div({flexDirection: 'row'})
+const Strut = ({size}) => <div style={{flexBasis: size}} />
+
+const miscRow = ({source, 'yield': yield_, yieldUnit, ovenTemp, cookTime, prepTime, totalTime}) => {
+  const items = []
+  if (source) items.push(<Row key='s'>{linkify(source)}</Row>)
+  if (yield_) items.push(<span key='y'>Makes {yield_} {yieldUnit}</span>)
+  if (ovenTemp) items.push(<span key='o'>Oven temp: {ovenTemp}˚F</span>)
+  // TODO format time nice
+  if (prepTime) items.push(<span key='p'>Prep time: {prepTime}m</span>)
+  if (cookTime) items.push(<span key='c'>Cook time: {cookTime}m</span>)
+  if (totalTime) items.push(<span key='t'>Total time: {totalTime}m</span>)
+  if (!items.length) return
+  return <Row
+    css={{
+      padding: '8px 16px',
+      fontSize: 14,
+      flexWrap: 'wrap',
+      marginBottom: 16,
+    }}
+  >
+    {interspersed(items, i => <Strut size={16} key={i} />)}
+  </Row>
 }
 
 const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
@@ -160,6 +221,7 @@ fragment RecipeCardFragment on Recipe {
   cookTime
   prepTime
   totalTime
+  ovenTemp
   instructions {
     text
     ingredientsUsed { id }
