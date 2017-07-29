@@ -32,7 +32,7 @@ class RecipeImporter extends React.Component {
   onPaste = e => {
     e.clipboardData.items[0].getAsString(url => {
       this.setState({loading: url})
-      fetch('http://localhost:4000/import?url=' + encodeURIComponent(url))
+      fetch('/import?url=' + encodeURIComponent(url))
       .then(r => r.json())
       .then(res => {
         this.setState({loading: false})
