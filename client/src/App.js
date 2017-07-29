@@ -17,9 +17,9 @@ import Lists from './pages/Lists'
 import ListPage from './pages/List'
 import AddListPage from './pages/AddList'
 
-import ChannelsListWithData from './components/ChannelsListWithData';
+// import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
-import ChannelDetails from './components/ChannelDetails';
+// import ChannelDetails from './components/ChannelDetails';
 
 import {
   ApolloClient,
@@ -28,23 +28,28 @@ import {
   toIdValue,
 } from 'react-apollo';
 
-import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
+// import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 
-const networkInterface = createNetworkInterface({ uri: 'http://localhost:4000/graphql' });
+const networkInterface = createNetworkInterface({
+  uri: true
+    ? 'https://tutorial-server-rzpavwjvjs.now.sh/graphql'
+    : 'http://localhost:4000/graphql'
+});
+
 // networkInterface.use([{
 //   applyMiddleware(req, next) {
 //     setTimeout(next, 500);
 //   },
 // }]);
 
-const wsClient = new SubscriptionClient(`ws://localhost:4000/subscriptions`, {
-  reconnect: true
-});
+// const wsClient = new SubscriptionClient(`ws://localhost:4000/subscriptions`, {
+//   reconnect: true
+// });
 
-const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
-  networkInterface,
-  wsClient
-);
+// const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
+//   networkInterface,
+//   wsClient
+// );
 
 function dataIdFromObject (result) {
   if (result.__typename) {
@@ -56,7 +61,7 @@ function dataIdFromObject (result) {
 }
 
 const client = new ApolloClient({
-  networkInterface: networkInterfaceWithSubscriptions,
+  networkInterface, // : networkInterfaceWithSubscriptions,
   customResolvers: {
     Query: {
       channel: (_, args) => {

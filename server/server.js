@@ -19,7 +19,11 @@ import { execute, subscribe } from 'graphql'
 import { createServer } from 'http'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
 
-import config from './config.json'
+// import config from './config.json'
+const config = {
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+}
 
 const PORT = 4000;
 const server = express();
