@@ -21,6 +21,7 @@
     "react-scripts": "^1.0.10"
   },
   "scripts": {
+    "deploy": "npm run build && cd build && surge -d foood.surge.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
