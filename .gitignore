@@ -38,3 +38,4 @@ jspm_packages
 db.json
 server/config.json
 public
+.env
