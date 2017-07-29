@@ -18,6 +18,9 @@ const Recipes = ({history, data: {home, loading, error}}) => {
     padding: 10,
     overflowX: 'auto',
   }}>
+    <Link to="/add">
+      Add recipe
+    </Link>
       {home.user.recipes.map(r => (
         <Link
           to={{pathname: "/recipe/" + r.id, state: {modal: true}}}

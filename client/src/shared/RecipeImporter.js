@@ -84,6 +84,7 @@ class RecipeImporter extends React.Component {
           flex: 1,
         }}
         onPaste={this.onPaste}
+        placeholder="paste URL"
         value=''
       />
       {this.state.error && this.state.error}

@@ -12,6 +12,10 @@ export default class SimpleDb {
     }
   }
 
+  init() {
+    return Promise.resolve(this)
+  }
+
   save() {
     fs.writeFileSync(this.path, JSON.stringify(this.data))
   }

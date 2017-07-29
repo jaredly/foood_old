@@ -11,6 +11,7 @@ import {
 
 import { schema } from './src/schema'
 import SimpleDb from './src/SimpleDb'
+import MongoDb from './src/MongoDb'
 import data from './src/fixtures'
 import importer from './src/importer'
 
@@ -18,22 +19,33 @@ import { execute, subscribe } from 'graphql'
 import { createServer } from 'http'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
 
+import config from './config.json'
+
 const PORT = 4000;
 const server = express();
 
-const db = new SimpleDb(__dirname + '/../db.json', data)
+// const db = new SimpleDb(__dirname + '/../db.json', data)
+const db = new MongoDb(
+  `mongodb://${config.username}:${config.password}@ds027425.mlab.com:27425/foood`,
+  data
+)
 
-server.use('*', cors({ origin: 'http://localhost:3001' }));
+// server.use('*', cors({ origin: 'http://localhost:3001' }));
+server.use(cors())
 
-server.use('/graphql', bodyParser.json(), graphqlExpress((req, res) => {
-  return {
-    schema,
-    context: {
-      currentUser: 'jared',
-      db,
-    },
-  }
-}));
+db.init().then(db => {
+  server.use('/graphql', bodyParser.json(), graphqlExpress((req, res) => {
+    return {
+      schema,
+      context: {
+        currentUser: 'jared',
+        db,
+      },
+    }
+  }));
+}, err => {
+  console.log('err initialize', err)
+})
 
 server.get('/import', (req, res) => {
   console.log(req.param('url'))

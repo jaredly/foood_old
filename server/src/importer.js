@@ -25,8 +25,8 @@ const zz = `
 const getTime = elem => {
   // console.log('got time', elem)
   if (!elem) return null
-  const dt = elem.attr('content')
-  console.log('dt', dt)
+  const dt = elem.attr('content') || elem.attr('datetime')
+  // console.log('dt', dt)
   if (dt) {
     const match = dt.trim().match(/^PT((\d+)H)?((\d+)M)?$/)
     if (match) {
@@ -142,9 +142,11 @@ export default text => {
 
   const allRecipeInstructions = $('[itemprop=recipeInstructions]')
     .map((i, elem) => {
-      const dt = $(elem).children('dt').get()
+      const dt = $(elem).find('dt').get()
+      console.log('instructions: dt', dt.length)
       if (dt.length) return dt.map(el => $(el).text())
-      const li = $(elem).children('li').get()
+      const li = $(elem).find('li').get()
+      console.log('instructions: li', li.length)
       if (li.length) return li.map(el => $(el).text())
       return [$(elem).text()]
     })
@@ -155,12 +157,14 @@ export default text => {
   const totalTime = getTime($('[itemprop=totalTime]'))
   const prepTime = getTime($('[itemprop=prepTime]'))
   const cookTime = getTime($('[itemprop=cookTime]'))
+  const yieldUnit = $('[itemprop=recipeyield]').text()
 
   return {
     title,
     description,
     ingredients,
     instructions,
+    yieldUnit,
     totalTime,
     prepTime,
     cookTime,

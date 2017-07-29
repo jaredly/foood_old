@@ -74,7 +74,7 @@ export default class AutoSelect extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     let text = this.state.text
-    if (nextProps.value !== this.props.value) {
+    if (nextProps.value) {
       const i = this.currentIndex(nextProps)
       const name = i === null ? null : nextProps.getName(nextProps.options[i])
       text = name

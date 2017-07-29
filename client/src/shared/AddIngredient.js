@@ -76,7 +76,6 @@ const AddIngredient = ({ingredient, addIngredient, onDone, onClose}) => {
       <Input {...text('defaultUnit')} placeholder='Default unit' />
       <Div css={{flexDirection: 'row'}}>
         <TopButton onClick={() => {
-          if (!isModified) return onClose()
           const {error, loading, ...ingredient} = data
 
           const newError = validate(ingredient)

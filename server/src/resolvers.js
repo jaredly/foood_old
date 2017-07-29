@@ -59,9 +59,9 @@ export const resolvers = {
   },
   UserHome: {
     user: (_, __, {currentUser, db}) => db.get('users', currentUser),
-    homepageLists: (_, __, {currentUser, db}) => db.gets('lists', db.get('userData', currentUser).homepageLists),
+    homepageLists: async (_, __, {currentUser, db}) => db.gets('lists', (await db.get('userData', currentUser)).homepageLists),
     // data.userData[context.currentUser].homepageLists.map(id => data.lists[id]),
-    following: (_, __, {currentUser, db}) => db.gets('users', db.get('userData', currentUser).following),
+    following: async (_, __, {currentUser, db}) => db.gets('users', (await db.get('userData', currentUser)).following),
     // data.userData[context.currentUser].following.map(id => data.users[id]),
   },
 
@@ -91,9 +91,9 @@ export const resolvers = {
       })
     },
 
-    addRecipeToLists: (_, {recipe: id, lists}, {currentUser, db}) => {
+    addRecipeToLists: async (_, {recipe: id, lists}, {currentUser, db}) => {
       console.log('adding', id, lists)
-      const nodes = db.gets('lists', lists)
+      const nodes = (await db.gets('lists', lists))
       .filter(list => !list.recipes.includes(id))
       .map(list => ({...list, recipes: list.recipes.concat([id])}))
 

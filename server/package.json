@@ -26,6 +26,7 @@
     "graphql-server-module-graphiql": "^1.0.2",
     "graphql-subscriptions": "^0.4.3",
     "graphql-tools": "^1.0.0",
+    "mongodb": "^2.2.30",
     "node-fetch": "^1.7.1",
     "subscriptions-transport-ws": "^0.8.1"
   }
