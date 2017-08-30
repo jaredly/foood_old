@@ -39,3 +39,4 @@ db.json
 server/config.json
 public
 .env
+run.sh
