@@ -99,7 +99,7 @@ type RecipeIngredient {
   id: ID!
   # author: User!
   ingredient: Ingredient!
-  amount: Float!
+  amount: Float
   unit: String
   comments: String
 }
@@ -141,7 +141,7 @@ input InstructionInput {
 input RecipeIngredientInput {
   id: ID
   ingredient: String! # id
-  amount: Float!
+  amount: Float
   unit: String
   comments: String
 }

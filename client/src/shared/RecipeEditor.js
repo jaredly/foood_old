@@ -191,7 +191,7 @@ const sourceRow = (bool, text, toggle) => <Row css={{fontSize: 10}}>
 
 const ingredientsList = {
   name: 'ingredients',
-  blank: () => ({amount: 1, ingredient: null, unit: '', comments: ''}),
+  blank: () => ({amount: null, ingredient: null, unit: '', comments: ''}),
   container: ({children, add}) => <Div
     children={children}
     css={{
@@ -215,11 +215,12 @@ const ingredientsList = {
       }}>
         {data ? i + 1 + '.' : 'new'}
       </Div>
-      <AmountInput onFocus={selectAll} {...float('amount', 1)} placeholder="Amount" />
+      <AmountInput onFocus={selectAll} {...float('amount', null)} placeholder="Amount" />
       {/* TODO defaultunit? */}
       <UnitInput onFocus={selectAll} {...text('unit')} placeholder="Unit" />
       <IngredientInput
         {...custom('ingredient')}
+        blank={data === null}
       />
       <IngredientCommentsInput 
         onFocus={selectAll}

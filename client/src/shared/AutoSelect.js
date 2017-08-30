@@ -44,6 +44,7 @@ export default class AutoSelect extends React.Component {
   props: {
     options: Array<any>,
     value: any,
+    highlightEmpty: bool,
     onAdd: ?() => void,
     onChange: () => void,
     getName: () => string,
@@ -212,9 +213,10 @@ export default class AutoSelect extends React.Component {
 
   render() {
     const {open, text} = this.state
-    const {value, options, placeholder, addText, onAdd} = this.props
+    const {value, options, placeholder, highlightEmpty, addText, onAdd} = this.props
     // const i = this.currentIndex()
     // const name = i === null ? null : options[i].name
+    const color = (value || (!text && !highlightEmpty)) ? 'white' : '#fee'
     return <Container innerRef={node => this.node = node}>
       <Input
         value={text}
@@ -222,7 +224,7 @@ export default class AutoSelect extends React.Component {
           padding: 8,
           fontSize: 16,
           border: 'none',
-          backgroundColor: (!text || value) ? 'white' : '#fee',
+          backgroundColor: color,
           ':hover': {
             outline: '1px solid #aaa',
             zIndex: 1,

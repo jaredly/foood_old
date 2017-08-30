@@ -33,7 +33,7 @@ class ApolloClient extends React.Component {
   }
 }
 
-const IngredientInput = ({value, onChange, data: {error, loading, ingredients}}) => {
+const IngredientInput = ({value, onChange, data: {error, loading, ingredients}, blank}) => {
   if (error) return <div>Error</div>
   if (loading) return <div>Loading</div>
   return <ApolloClient>
@@ -42,6 +42,7 @@ const IngredientInput = ({value, onChange, data: {error, loading, ingredients}})
       onChange={onChange}
       getName={option => option.name}
       options={ingredients}
+      highlightEmpty={!blank}
       onAdd={(e, initialText) => {
         let pos
         if (e.clientX || e.clientY) {
