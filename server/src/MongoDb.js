@@ -9,6 +9,10 @@ export default class MongoDb {
 
   init() {
     return new Promise((res, rej) => MongoClient.connect(this.url, (err, db) => {
+      if (err) {
+        console.error('fail', err)
+        throw err
+      }
       this.db = db
       res(this)
     }))

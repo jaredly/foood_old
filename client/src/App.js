@@ -16,6 +16,7 @@ import AddRecipe from './shared/AddRecipe'
 import Lists from './pages/Lists'
 import ListPage from './pages/List'
 import AddListPage from './pages/AddList'
+import {API} from './config'
 
 // import ChannelsListWithData from './components/ChannelsListWithData';
 import NotFound from './components/NotFound';
@@ -31,9 +32,7 @@ import {
 // import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 
 const networkInterface = createNetworkInterface({
-  uri: true
-    ? 'https://tutorial-server-rzpavwjvjs.now.sh/graphql'
-    : 'http://localhost:4000/graphql'
+  uri: API + '/graphql'
 });
 
 // networkInterface.use([{

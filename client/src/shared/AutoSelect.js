@@ -222,6 +222,7 @@ export default class AutoSelect extends React.Component {
           padding: 8,
           fontSize: 16,
           border: 'none',
+          backgroundColor: (!text || value) ? 'white' : '#fee',
           ':hover': {
             outline: '1px solid #aaa',
             zIndex: 1,

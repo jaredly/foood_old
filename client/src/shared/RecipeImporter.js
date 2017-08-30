@@ -6,6 +6,8 @@ import {
     compose,
 } from 'react-apollo';
 
+import {API} from '../config'
+
 const findIngredient = (allIngredients, text) => {
   const names = [].concat(...allIngredients.map(i => i.plural
     ? [[i.plural, i.id], [i.name, i.id]]
@@ -32,7 +34,7 @@ class RecipeImporter extends React.Component {
   onPaste = e => {
     e.clipboardData.items[0].getAsString(url => {
       this.setState({loading: url})
-      fetch('/import?url=' + encodeURIComponent(url))
+      fetch(API + '/import?url=' + encodeURIComponent(url))
       .then(r => r.json())
       .then(res => {
         this.setState({loading: false})

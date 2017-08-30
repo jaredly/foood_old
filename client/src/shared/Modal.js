@@ -7,6 +7,7 @@ import {browserHistory} from 'history'
 const {div} = glamorous
 
 const Backdrop = div({
+  zIndex: 100,
     position: 'absolute',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     alignItems: 'center',
@@ -18,6 +19,7 @@ const Backdrop = div({
 })
 
 const Inner = div({
+  zIndex: 101,
   width: 800,
   maxWidth: '100%',
   height: 600,

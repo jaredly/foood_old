@@ -11,7 +11,8 @@ import {
 
 import { schema } from './src/schema'
 import SimpleDb from './src/SimpleDb'
-import MongoDb from './src/MongoDb'
+// import MongoDb from './src/MongoDb'
+import FongoDb from './src/FongoDb'
 import data from './src/fixtures'
 import importer from './src/importer'
 
@@ -28,11 +29,11 @@ const config = {
 const PORT = 4000;
 const server = express();
 
-// const db = new SimpleDb(__dirname + '/../db.json', data)
-const db = new MongoDb(
-  `mongodb://${config.username}:${config.password}@ds027425.mlab.com:27425/foood`,
-  data
-)
+const db = new FongoDb(__dirname + '/../db.json', data)
+// const db = new MongoDb(
+//   `mongodb://${config.username}:${config.password}@ds027425.mlab.com:27425/foood`,
+//   data
+// )
 
 // server.use('*', cors({ origin: 'http://localhost:3001' }));
 server.use(cors())
