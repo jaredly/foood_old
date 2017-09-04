@@ -51,6 +51,7 @@ const units = {
   'tablespoon': ['tablespoons', 'tablespoon', 'Tablespoons', 'Tablespoon', 'Tbs', 'tbs', 'T'],
   'teaspoon': ['t', 'tsp', 'Tsp', 'teaspoons', 'teaspoon', 'Teaspoons', 'Teaspoon'],
   'ounce': ['oz', 'ounces', 'ounce'],
+  'pound': ['lbs', 'lb', 'pounds', 'pound'],
   'gram': ['g', 'grams', 'G', 'Grams', 'gram', 'Gram'],
   'kilogram': ['kg', 'Kg', 'Kilograms', 'Kilogram', 'kilograms', 'kilogram'],
   'quart': ['quarts', 'Quarts', 'quart', 'Quart', 'qts', 'qt'],
@@ -134,11 +135,19 @@ export default text => {
   const $ = cheerio.load(text)
   const title = unwhite($('[itemprop=name]').text())
   const description = unwhite($('[itemprop=description]').text())
-  const ingredients = $('[itemprop=ingredients]')
+  let ingredients = $('[itemprop=ingredients]')
     .map((i, elem) => $(elem).text())
     .get()
     .map(unwhite)
     .map(parseIngredient)
+  if (!ingredients.length) {
+    ingredients = $('[itemprop=recipeIngredient]')
+      .map((i, elem) => $(elem).text())
+      .get()
+      .map(unwhite)
+      .map(parseIngredient)
+  } 
+  console.log(ingredients)
 
   const allRecipeInstructions = $('[itemprop=recipeInstructions]')
     .map((i, elem) => {

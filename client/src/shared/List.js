@@ -30,7 +30,7 @@ export const ListView = ({id, list, onEdit}) => {
   return <div style={{
     boxShadow: '0 0 3px #aaa',
     backgroundColor: 'white',
-    borderRadius: 3,
+    // borderRadius: 3,
     flex: 1,
   }}>
     <div style={{
@@ -76,7 +76,7 @@ export const ListView = ({id, list, onEdit}) => {
             margin: 10,
             cursor: 'pointer',
             boxShadow: '0 0 3px #aaa',
-            borderRadius: 3,
+            // borderRadius: 3,
           }}
           key={r.id}
         >

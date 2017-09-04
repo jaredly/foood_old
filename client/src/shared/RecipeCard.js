@@ -14,7 +14,7 @@ const TopButton = glamorous.div({
   cursor: 'pointer',
   backgroundColor: 'transparent',
   border: 'none',
-  padding: 11,
+  padding: 7,
   // padding: 8,
   ':hover': {
     backgroundColor: '#eee',
@@ -23,8 +23,11 @@ const TopButton = glamorous.div({
 
 const Title = glamorous.div({
   fontSize: 20,
+  alignSelf: 'center',
+  whiteSpace: 'normal',
   fontWeight: 'bold',
-  margin: '8px 0',
+  maxWidth: '100%',
+  margin: 8,
 })
 
 const SubTitle = glamorous.div({
@@ -79,9 +82,7 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
       flexWrap: 'wrap',
       alignItems: 'center',
     }}>
-      <div style={{flexBasis: 16}} />
       <Title>{title}</Title>
-      <div style={{flexBasis: 8}} />
       <div style={{
         color: '#777',
         fontSize: '80%',
@@ -102,13 +103,13 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
       overflow: 'auto',
     }}>
     <Strut size={16} />
-    <Section style={{
+    {description && <Section style={{
       fontStyle: 'italic',
       color: '#777',
       fontSize: '80%',
     }}>
       {description}
-    </Section>
+    </Section>}
     <Strut size={16} />
     {miscRow({source, ovenTemp, cookTime, prepTime, totalTime, yieldUnit, 'yield': yield_})}
     {/* {source && <div style={{padding: '8px 16px', fontSize: 12}}>{linkify(source)}</div>} */}
@@ -117,21 +118,21 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
       <Strut size={16} />
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'max-content max-content max-content',
+        gridTemplateColumns: 'max-content max-content 1fr',
         gridGap: '8px 8px',
         backgroundColor: '#fff',
         color: '#444',
       }}>
       {ingredients.map(({amount, unit, comments, ingredient: {id, name, plural}}, i) => (
-          [<div style={{textAlign: 'right'}} key={id + 'a'}>
-            {amount}
+          [<div style={{textAlign: 'right', fontWeight: 'normal'}} key={id + 'a'}>
+            {fractionify(amount)}
           </div>,
-          <div key={id + 'c'}>
-            {unit}
+          <div key={id + 'c'} style={{color: '#555'}}>
+            {smallUnit(unit)}
           </div>,
           <div key={id + 'b'} style={{marginLeft: 8, flexDirection: 'row'}}>
             {name}
-            <div style={{fontStyle: 'italic', marginLeft: 16}}>
+            <div style={{fontStyle: 'italic', marginLeft: 16, flex: 1}}>
               {comments}
             </div>
           </div>]
@@ -157,6 +158,53 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
     </Section>}
     </div>
   </div>
+}
+
+const fractionify = number => {
+  const whole = Math.floor(number);
+  const fract = number - whole;
+  if (!fract) return number
+  const fstr = {0.25: '¼', 0.5: '½', 0.75: '¾'}[fract];
+  if (!whole && fstr) return fstr
+  if (!fstr) return number
+  return whole + ' ' + fstr
+}
+
+const units = {
+  'cup': ['cups', 'cup', 'Cups'],
+  'tablespoon': ['tablespoons', 'tablespoon', 'Tablespoons', 'Tablespoon', 'Tbs', 'tbs', 'T'],
+  'teaspoon': ['t', 'tsp', 'Tsp', 'teaspoons', 'teaspoon', 'Teaspoons', 'Teaspoon'],
+  'ounce': ['oz', 'ounces', 'ounce'],
+  'pound': ['lbs', 'lb', 'pounds', 'pound'],
+  'gram': ['g', 'grams', 'G', 'Grams', 'gram', 'Gram'],
+  'kilogram': ['kg', 'Kg', 'Kilograms', 'Kilogram', 'kilograms', 'kilogram'],
+  'quart': ['quarts', 'Quarts', 'quart', 'Quart', 'qts', 'qt'],
+  'can': ['cans', 'can', 'Cans', 'Can'],
+  'package': ['packages', 'package', 'Packages', 'Package', 'pkg', 'Pkg'],
+}
+
+const smallNames = {
+  cup: 'c',
+  tablespoon: 'T',
+  teaspoon: 't',
+  ounce: 'oz',
+  pound: 'lb',
+  gram: 'g',
+  kilogram: 'kg',
+  quart: 'qt',
+  can: 'can',
+  package: 'pkg',
+}
+
+const smallUnit = unit => {
+  for (let key in units) {
+    for (let name of units[key]) {
+      if (unit === name) {
+        return smallNames[key]
+      }
+    }
+  }
+  return unit
 }
 
 const interspersed = (list, maker) => {
@@ -197,7 +245,7 @@ const miscRow = ({source, 'yield': yield_, yieldUnit, ovenTemp, cookTime, prepTi
 
 const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
   if (error) return <div>{error}</div>
-  if (loading) return <div>loading</div>
+  if (loading) return <div style={{padding: 40}}>loading</div>
   return <RecipeCardBase onEdit={onEdit} expanded={expanded} recipe={recipe} />
 }
 
