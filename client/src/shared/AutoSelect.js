@@ -25,7 +25,7 @@ const Container = glamorous.div({
 const Current = glamorous.div({
   fontSize: 16,
   padding: '8px 16px',
-  width: 200,
+  width: 300,
   ':hover': {
     backgroundColor: '#eee',
   }
@@ -40,12 +40,20 @@ const Menu = glamorous.div({
   overflow: 'auto',
 })
 
+const AddButton = glamorous.button({
+  border: 'none',
+  backgroundColor: 'white',
+  boxShadow: '0 0 2px #aaa',
+  cursor: 'pointer',
+  margin: 5,
+})
+
 export default class AutoSelect extends React.Component {
   props: {
     options: Array<any>,
     value: any,
     highlightEmpty: bool,
-    onAdd: ?() => void,
+    onAdd: ?(text: string) => void,
     onChange: () => void,
     getName: () => string,
   }
@@ -57,6 +65,7 @@ export default class AutoSelect extends React.Component {
     const name = i === null ? '' : props.getName(props.options[i])
     this.state = {
       open: false,
+      loading: false,
       text: name,
       selectedIndex: 0,
       filtered: props.options,
@@ -117,13 +126,19 @@ export default class AutoSelect extends React.Component {
 
   onKeyDown = e => {
     const {selectedIndex, filtered} = this.state
-    const max = filtered.length // not -1 b/c of the "add new" at the end
+    const max = filtered.length - 1
     switch (e.key) {
       case 'Enter':
         e.preventDefault()
         this.setState({open: false}) // maybe don't blur on close? idk
-        if (selectedIndex === filtered.length) {
-          this.props.onAdd(e, this.state.text)
+        if (!filtered.length) {
+          if (!this.state.text.trim()) return
+          this.setState({loading: true})
+          this.props.onAdd(this.state.text).then(() => {
+            this.setState({loading: false})
+          }, err => {
+            this.setState({text: 'Error adding ingredient'})
+          })
         } else {
           this.props.onChange(filtered[selectedIndex].id)
         }
@@ -197,7 +212,7 @@ export default class AutoSelect extends React.Component {
             () => this.onSelect(option.id),
           )
         ))}
-        {addText && renderOption(
+        {/*addText && renderOption(
           '$add$',
           addText,
           this.state.selectedIndex === filtered.length,
@@ -206,7 +221,7 @@ export default class AutoSelect extends React.Component {
             fontStyle: 'italic',
             color: '#555',
           }
-        )}
+        )*/}
       </Menu>
     </Portal>
   }
@@ -218,18 +233,30 @@ export default class AutoSelect extends React.Component {
     // const name = i === null ? null : options[i].name
     const color = (value || (!text && !highlightEmpty)) ? 'white' : '#fee'
     return <Container innerRef={node => this.node = node}>
+      <Div css={{
+        width: 300,
+        flexDirection: 'row',
+        backgroundColor: color,
+        ':hover': {
+          outline: '1px solid #aaa',
+          zIndex: 1,
+        },
+        ':focus': {
+          outline: '1px solid #aaa',
+          zIndex: 1,
+        }
+      }}>
       <Input
         value={text}
         css={{
           padding: 8,
           fontSize: 16,
+          outline: 'none',
+          flex: 1,
           border: 'none',
-          backgroundColor: color,
-          ':hover': {
-            outline: '1px solid #aaa',
-            zIndex: 1,
-          }
+          backgroundColor: 'transparent',
         }}
+        disabled={this.state.loading}
         onChange={e => this.setText(e.target.value)}
         onKeyDown={this.onKeyDown}
         innerRef={input => this.input = input}
@@ -240,6 +267,8 @@ export default class AutoSelect extends React.Component {
         }}
         onBlur={() => this.setState({open: false})}
       />
+      {!value && text && <AddButton onClick={() => onAdd(text)}>{addText}</AddButton>}
+      </Div>
       {open && this.renderMenu()}
     </Container>
   }

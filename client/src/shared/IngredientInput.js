@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import {
   Link
 } from 'react-router-dom'
-import {ApolloProvider} from 'react-apollo'
+import {ApolloProvider, compose} from 'react-apollo'
 
 import glamorous, {Div, Button, Input, Textarea} from 'glamorous'
 import Checkmark from 'react-icons/lib/io/ios-checkmark-empty'
@@ -33,7 +33,7 @@ class ApolloClient extends React.Component {
   }
 }
 
-const IngredientInput = ({value, onChange, data: {error, loading, ingredients}, blank}) => {
+const IngredientInput = ({value, onChange, addIngredient, data: {error, loading, ingredients}, blank}) => {
   if (error) return <div>Error</div>
   if (loading) return <div>Loading</div>
   return <ApolloClient>
@@ -43,19 +43,20 @@ const IngredientInput = ({value, onChange, data: {error, loading, ingredients}, 
       getName={option => option.name}
       options={ingredients}
       highlightEmpty={!blank}
-      onAdd={(e, initialText) => {
-        let pos
-        if (e.clientX || e.clientY) {
-          pos = {x: e.clientX, y: e.clientY}
-        } else {
-          const box = e.target.getBoundingClientRect()
-          pos = {x: box.left, y: box.top}
-        }
-        addIngredient(initialText, client, store, pos.x, pos.y, id => {
-          onChange(id)
+      onAdd={text => {
+        return addIngredient({
+          variables: {ingredient: {
+            name: text,
+            plural: null,
+            defaultUnit: null,
+          }},
+          refetchQueries: [{
+            query: ingredientsQuery,
+          }]
         })
+        .then(({data: {addIngredient: {id, name}}}) => onChange(id))
       }}
-      addText='New ingredient'
+      addText='New'
       placeholder='Add Ingredient'
     />}
   </ApolloClient>
@@ -69,49 +70,49 @@ const isAncestor = (parent, node) => {
 }
 
 
-const addIngredient = (initialText, client, store, x, y, onDone) => {
-  const node = document.createElement('div')
+// const addIngredient = (initialText, client, store, x, y, onDone) => {
+//   const node = document.createElement('div')
 
-  const listen = e => {
-    if (isAncestor(node, e.target)) {
-      return
-    }
-    e.stopPropagation()
-    e.preventDefault()
-    cleanup()
-  }
+//   const listen = e => {
+//     if (isAncestor(node, e.target)) {
+//       return
+//     }
+//     e.stopPropagation()
+//     e.preventDefault()
+//     cleanup()
+//   }
 
-  const cleanup = () => {
-    ReactDOM.unmountComponentAtNode(node)
-    node.parentNode.removeChild(node)
-    window.removeEventListener('mousedown', listen, true)
-  }
+//   const cleanup = () => {
+//     ReactDOM.unmountComponentAtNode(node)
+//     node.parentNode.removeChild(node)
+//     window.removeEventListener('mousedown', listen, true)
+//   }
 
-  document.body.appendChild(node)
-  window.addEventListener('mousedown', listen, true)
+//   document.body.appendChild(node)
+//   window.addEventListener('mousedown', listen, true)
 
-  ReactDOM.render(<ApolloProvider client={client} store={store}>
-    <div
-      style={{
-        boxShadow: '0 0 5px #aaa',
-        borderRadius: 4,
-        backgroundColor: 'white',
-        position: 'absolute',
-        zIndex: 1000,
-        top: y,
-        left: x,
-      }}
-    >
-      <AddIngredient
-        onDone={onDone}
-        onClose={cleanup}
-        ingredient={{
-          name: initialText
-        }}
-      />
-    </div>
-  </ApolloProvider>, node)
-}
+//   ReactDOM.render(<ApolloProvider client={client} store={store}>
+//     <div
+//       style={{
+//         boxShadow: '0 0 5px #aaa',
+//         borderRadius: 4,
+//         backgroundColor: 'white',
+//         position: 'absolute',
+//         zIndex: 1000,
+//         top: y,
+//         left: x,
+//       }}
+//     >
+//       <AddIngredient
+//         onDone={onDone}
+//         onClose={cleanup}
+//         ingredient={{
+//           name: initialText
+//         }}
+//       />
+//     </div>
+//   </ApolloProvider>, node)
+// }
 
 export const ingredientsQuery = gql`
 # Maybe paging
@@ -124,9 +125,18 @@ query IngredientsQuery {
 }
 `
 
-export default graphql(ingredientsQuery, {
-  // options: ({id}) => ({
-  //   // pollInterval: 60 * 1000,
-  //   variables: {id},
-  // })
-})(IngredientInput)
+export const addIngredient = gql`
+mutation AddIngredientMutation($ingredient: IngredientInput!) {
+  addIngredient(ingredient: $ingredient) {
+    id
+    name
+    plural
+    defaultUnit    
+  }
+}
+`
+
+export default compose(
+  graphql(addIngredient, {name: 'addIngredient'}),
+  graphql(ingredientsQuery)
+)(IngredientInput)
