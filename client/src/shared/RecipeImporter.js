@@ -7,26 +7,7 @@ import {
 } from 'react-apollo';
 
 import {API} from '../config'
-
-const findIngredient = (allIngredients, text) => {
-  const names = [].concat(...allIngredients.map(i => i.plural
-    ? [[i.plural, i.id], [i.name, i.id]]
-    : [[i.name, i.id]]))
-  // TODO include alternative names
-  names.sort((a, b) => b[0].length - a[0].length)
-  const haystack = text.toLowerCase()
-  for (let [name, id] of names) {
-    if (haystack.indexOf(name.toLowerCase()) === 0) {
-      return [id, text.slice(name.length)]
-    }
-  }
-  for (let [name, id] of names) {
-    if (haystack.indexOf(name.toLowerCase()) != -1) {
-      return [id, text]
-    }
-  }
-  return [null, text]
-}
+import {findIngredient} from './importUtils'
 
 class RecipeImporter extends React.Component {
   state = {loading: false, error: null}

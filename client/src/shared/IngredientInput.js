@@ -33,33 +33,32 @@ class ApolloClient extends React.Component {
   }
 }
 
-const IngredientInput = ({value, onChange, addIngredient, data: {error, loading, ingredients}, blank}) => {
+const IngredientInput = ({value, onChange, guess, addIngredient, data: {error, loading, ingredients}, blank}) => {
   if (error) return <div>Error</div>
   if (loading) return <div>Loading</div>
-  return <ApolloClient>
-    {(client, store) => <AutoSelect
-      value={value}
-      onChange={onChange}
-      getName={option => option.name}
-      options={ingredients}
-      highlightEmpty={!blank}
-      onAdd={text => {
-        return addIngredient({
-          variables: {ingredient: {
-            name: text,
-            plural: null,
-            defaultUnit: null,
-          }},
-          refetchQueries: [{
-            query: ingredientsQuery,
-          }]
-        })
-        .then(({data: {addIngredient: {id, name}}}) => onChange(id))
-      }}
-      addText='New Ingredient'
-      placeholder='Add Ingredient'
-    />}
-  </ApolloClient>
+  return <AutoSelect
+    value={value}
+    onChange={onChange}
+    initialText={guess}
+    getName={option => option.name}
+    options={ingredients}
+    highlightEmpty={!blank}
+    onAdd={text => {
+      return addIngredient({
+        variables: {ingredient: {
+          name: text,
+          plural: null,
+          defaultUnit: null,
+        }},
+        refetchQueries: [{
+          query: ingredientsQuery,
+        }]
+      })
+      .then(({data: {addIngredient: {id, name}}}) => onChange(id))
+    }}
+    addText='New Ingredient'
+    placeholder='Add Ingredient'
+  />
 }
 
 const isAncestor = (parent, node) => {

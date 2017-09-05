@@ -12,6 +12,11 @@ import GrowingTextarea from './GrowingTextarea'
 import AutoSelect from './AutoSelect'
 import Form from './formative'
 import RecipeImporter from './RecipeImporter'
+import {maybeFindIngredient} from './importUtils'
+import apolloClient from '../apolloClient'
+import {gql} from 'react-apollo';
+
+import {parseIngredient, splitList} from './importUtils'
 
 const {div} = glamorous
 
@@ -87,19 +92,45 @@ const validate = ({title, ingredients, instructions}) => {
   // if (!instructions.length) return 'Must have at least one instruction'
 }
 
-const ingredientsPaster = (data, setMany) => {
-  // 24oz jar of pasta sauce
-  // • 1lb carrots, peeled and chopped
-  // • 1/2 cup medium pearled barley (not “quick cooking”)
-  // • 1 small onion, peeled and diced (about one cup)
-  // • 12oz green beans, cut into 1-inch pieces (The fresh beans didn’t look good at
-  // the grocery store, so I bought a bag of “ready to cook” fresh green beans in
-  // the produce section)
-  // • 1 cup frozen peas, optional (I added what was left in the bag after making the
-  // coconut chickpea curry)
-  // • 15oz can of great northern beans, drained and rinsed
-  // • 4 cups of vegetable broth *not needed until day of cooking (you can sub
-  // chicken broth if you’re not vegetarian)
+export const ingredientsQuery = gql`
+# Maybe paging
+query IngredientsQuery {
+  ingredients {
+    id
+    name
+    plural
+  }
+}
+`
+
+
+const ingredientsPaster = (data, set) => {
+  return (e: ClipboardEvent, i: number) => {
+    e.preventDefault()
+    e.clipboardData.items[0].getAsString(pastedText => {
+      const ingredients = (data && data.ingredients || []).slice(0, i)
+      const imported = splitList(pastedText).map(parseIngredient)
+        .map(i => ({...i, imported: Date.now()}))
+      apolloClient.query({
+        query: ingredientsQuery
+      }).then(value => {
+        console.log(value)
+        set('ingredients', ingredients.concat(imported.map(item => maybeFindIngredient(value.data.ingredients, item))))
+      })
+    })
+  }
+}
+
+const instructionsPaster = (data, set) => (e: ClipboardEvent, i: number) => {
+  const text = e.clipboardData.getData('text/plain')
+  const items = splitList(text.trim())
+  if (items.length > 0) {
+    e.preventDefault()
+    const instructions = (data && data.instructions || []).slice(0, i)
+    set('instructions', instructions.concat(items.map(text => ({text, ingredientsUsed: []}))))
+  } else {
+    // let the paste do its thing
+  }
 }
 
 const RecipeEditor = ({recipe, onAction, action, onDone}) => {
@@ -114,12 +145,18 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
           <TopButton onClick={() => {
             if (!isModified) return onDone()
             const error = validate(data)
+            const info = {
+              ...data,
+              ingredients: data.ingredients.map(({ingredient, comments, amount, unit}) => ({
+                ingredient, comments, amount, unit
+              }))
+            }
             if (error) {
               set('error', error)
             } else {
               set('error', null)
               set('loading', true)
-              onAction(data)
+              onAction(info)
               .then(
                 () => set('loading', false),
                 err => (set('loading', false), set('error', err + ''))
@@ -140,9 +177,9 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
           <Label>Description</Label>
           <Description {...text('description')} />
           <Label>Ingredients</Label>
-          {list(ingredientsList(ingredientsPaster(data, setMany)))}
+          {list(ingredientsList(ingredientsPaster(data, set)))}
           <Label>Instructions</Label>
-          {list(instructionsList)}
+          {list(instructionsList(instructionsPaster(data, set)))}
         </Div>
         <RecipeImporter
           onDone={recipe => {
@@ -157,39 +194,27 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
 const miscRow = (text, float) => <Row css={{fontSize: 12}}>
   Yield
   <Strut size={8} />
-  <Input {...float('yield', '')}
-  css={{width: 50}}
-  />
+  <Input {...float('yield', '')} css={{width: 50}} />
   <Strut size={16} />
   Unit
   <Strut size={8} />
-  <Input {...text('yieldUnit', '')}
-  css={{width: 50}}
-  />
+  <Input {...text('yieldUnit', '')} css={{width: 50}} />
   <Strut size={16} />
   Prep time (minutes)
   <Strut size={8} />
-  <Input {...float('prepTime', '')}
-  css={{width: 50}}
-  />
+  <Input {...float('prepTime', '')} css={{width: 50}} />
   <Strut size={16} />
   Cook time (minutes)
   <Strut size={8} />
-  <Input {...float('cookTime', '')}
-  css={{width: 50}}
-  />
+  <Input {...float('cookTime', '')} css={{width: 50}} />
   <Strut size={16} />
   Total time (minutes)
   <Strut size={8} />
-  <Input {...float('totalTime', '')}
-  css={{width: 50}}
-  />
+  <Input {...float('totalTime', '')} css={{width: 50}} />
   <Strut size={16} />
   Oven Temp (˚F)
   <Strut size={8} />
-  <Input {...float('ovenTemp', '')}
-  css={{width: 50}}
-  />
+  <Input {...float('ovenTemp', '')} css={{width: 50}} />
 </Row>
 
 const sourceRow = (bool, text, toggle) => <Row css={{fontSize: 10}}>
@@ -216,13 +241,18 @@ const ingredientsList = paster => ({
     }}
   />,
   item: ({text, float, custom, remove}, data, i) => (
-    <Row key={i} css={[
+    <Row key={i + '_' + (data ? data.imported : '')} css={[
       {margin: 0, minHeight: 30},
       data === null && {
         color: '#888',
         fontStyle: 'italic',
       }
     ]}>
+      {data 
+        ? <RowDeleteButton onClick={remove}>
+            <Close size={20} />
+          </RowDeleteButton>
+        : <Strut size={30} />}
       <Div css={{
         marginRight: 10,
         marginLeft: 5,
@@ -230,11 +260,13 @@ const ingredientsList = paster => ({
       }}>
         {data ? i + 1 + '.' : 'new'}
       </Div>
-      <AmountInput onPaste={paster} onFocus={selectAll} {...float('amount', null)} placeholder="Amount" />
+      <AmountInput
+        onPaste={e => paster(e, i)} onFocus={selectAll} {...float('amount', null)} placeholder="Amount" />
       {/* TODO defaultunit? */}
       <UnitInput onFocus={selectAll} {...text('unit')} placeholder="Unit" />
       <IngredientInput
         {...custom('ingredient')}
+        guess={data ? data.guess : null}
         blank={data === null}
       />
       <IngredientCommentsInput 
@@ -242,11 +274,6 @@ const ingredientsList = paster => ({
         {...text('comments')}
         placeholder="Comments"
       />
-      {data 
-        ? <RowDeleteButton onClick={remove}>
-            <Close size={20} />
-          </RowDeleteButton>
-        : <Strut size={30} />}
     </Row>
   )
 })
@@ -255,7 +282,7 @@ const selectAll = e => {
   e.target.select()
 }
 
-const instructionsList = {
+const instructionsList = paster => ({
   name: 'instructions',
   blank: () => ({text: '', ingredientsUsed: []}),
   container: ({children, add}) => <Div
@@ -278,6 +305,11 @@ const instructionsList = {
         fontStyle: 'italic',
       }
     ]}>
+      {data 
+        ? <RowDeleteButton onClick={remove}>
+            <Close size={20} />
+          </RowDeleteButton>
+        : <Strut size={30} />}
       <Div css={{
         marginRight: 10,
         marginLeft: 5,
@@ -288,16 +320,12 @@ const instructionsList = {
       </Div>
       <InstructionInput
         {...text('text')}
+        onPaste={e => paster(e, i)}
         style={{flex: 1}}
         placeholder="Instruction Text" />
-      {data 
-        ? <RowDeleteButton onClick={remove}>
-            <Close size={20} />
-          </RowDeleteButton>
-        : <Strut size={30} />}
     </Row>
   )
-}
+})
 
 const AmountInput = glamorous.input({
   width: 80,
@@ -315,7 +343,7 @@ const AmountInput = glamorous.input({
 })
 
 const UnitInput = glamorous.input({
-  width: 50,
+  width: 80,
   backgroundColor: 'transparent',
   fontStyle: 'inherit',
   border: 'none',

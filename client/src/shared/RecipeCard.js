@@ -9,6 +9,7 @@ import {
     graphql,
 } from 'react-apollo';
 import Edit from 'react-icons/lib/io/edit';
+import {smallUnit, fractionify} from './importUtils'
 
 const TopButton = glamorous.div({
   cursor: 'pointer',
@@ -160,52 +161,6 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
   </div>
 }
 
-const fractionify = number => {
-  const whole = Math.floor(number);
-  const fract = number - whole;
-  if (!fract) return number
-  const fstr = {0.25: '¼', 0.5: '½', 0.75: '¾'}[fract];
-  if (!whole && fstr) return fstr
-  if (!fstr) return number
-  return whole + ' ' + fstr
-}
-
-const units = {
-  'cup': ['cups', 'cup', 'Cups'],
-  'tablespoon': ['tablespoons', 'tablespoon', 'Tablespoons', 'Tablespoon', 'Tbs', 'tbs', 'T'],
-  'teaspoon': ['t', 'tsp', 'Tsp', 'teaspoons', 'teaspoon', 'Teaspoons', 'Teaspoon'],
-  'ounce': ['oz', 'ounces', 'ounce'],
-  'pound': ['lbs', 'lb', 'pounds', 'pound'],
-  'gram': ['g', 'grams', 'G', 'Grams', 'gram', 'Gram'],
-  'kilogram': ['kg', 'Kg', 'Kilograms', 'Kilogram', 'kilograms', 'kilogram'],
-  'quart': ['quarts', 'Quarts', 'quart', 'Quart', 'qts', 'qt'],
-  'can': ['cans', 'can', 'Cans', 'Can'],
-  'package': ['packages', 'package', 'Packages', 'Package', 'pkg', 'Pkg'],
-}
-
-const smallNames = {
-  cup: 'c',
-  tablespoon: 'T',
-  teaspoon: 't',
-  ounce: 'oz',
-  pound: 'lb',
-  gram: 'g',
-  kilogram: 'kg',
-  quart: 'qt',
-  can: 'can',
-  package: 'pkg',
-}
-
-const smallUnit = unit => {
-  for (let key in units) {
-    for (let name of units[key]) {
-      if (unit === name) {
-        return smallNames[key]
-      }
-    }
-  }
-  return unit
-}
 
 const interspersed = (list, maker) => {
   const res = []

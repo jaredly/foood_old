@@ -53,6 +53,7 @@ export default class AutoSelect extends React.Component {
     options: Array<any>,
     value: any,
     highlightEmpty: bool,
+    initialText: string,
     onAdd: ?(text: string) => void,
     onChange: () => void,
     getName: () => string,
@@ -62,7 +63,7 @@ export default class AutoSelect extends React.Component {
     super()
 
     const i = this.currentIndex(props)
-    const name = i === null ? '' : props.getName(props.options[i])
+    const name = i === null ? (props.initialText || '') : props.getName(props.options[i])
     this.state = {
       open: false,
       loading: false,
@@ -126,7 +127,7 @@ export default class AutoSelect extends React.Component {
 
   onAdd = () => {
     if (!this.state.text.trim()) return
-    this.setState({loading: true})
+    this.setState({loading: true, open: false})
     this.props.onAdd(this.state.text).then(() => {
       this.setState({loading: false})
     }, err => {
