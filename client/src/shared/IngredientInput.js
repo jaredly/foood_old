@@ -56,7 +56,7 @@ const IngredientInput = ({value, onChange, addIngredient, data: {error, loading,
         })
         .then(({data: {addIngredient: {id, name}}}) => onChange(id))
       }}
-      addText='New'
+      addText='New Ingredient'
       placeholder='Add Ingredient'
     />}
   </ApolloClient>

@@ -87,6 +87,21 @@ const validate = ({title, ingredients, instructions}) => {
   // if (!instructions.length) return 'Must have at least one instruction'
 }
 
+const ingredientsPaster = (data, setMany) => {
+  // 24oz jar of pasta sauce
+  // • 1lb carrots, peeled and chopped
+  // • 1/2 cup medium pearled barley (not “quick cooking”)
+  // • 1 small onion, peeled and diced (about one cup)
+  // • 12oz green beans, cut into 1-inch pieces (The fresh beans didn’t look good at
+  // the grocery store, so I bought a bag of “ready to cook” fresh green beans in
+  // the produce section)
+  // • 1 cup frozen peas, optional (I added what was left in the bag after making the
+  // coconut chickpea curry)
+  // • 15oz can of great northern beans, drained and rinsed
+  // • 4 cups of vegetable broth *not needed until day of cooking (you can sub
+  // chicken broth if you’re not vegetarian)
+}
+
 const RecipeEditor = ({recipe, onAction, action, onDone}) => {
   return <Form initial={recipe}>
     {({text, float, bool, list, toggle, set, setMany}, data, isModified) => (
@@ -125,7 +140,7 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
           <Label>Description</Label>
           <Description {...text('description')} />
           <Label>Ingredients</Label>
-          {list(ingredientsList)}
+          {list(ingredientsList(ingredientsPaster(data, setMany)))}
           <Label>Instructions</Label>
           {list(instructionsList)}
         </Div>
@@ -189,7 +204,7 @@ const sourceRow = (bool, text, toggle) => <Row css={{fontSize: 10}}>
   <SourceInput {...text('source')} placeholder="(url or text)" />
 </Row>
 
-const ingredientsList = {
+const ingredientsList = paster => ({
   name: 'ingredients',
   blank: () => ({amount: null, ingredient: null, unit: '', comments: ''}),
   container: ({children, add}) => <Div
@@ -215,7 +230,7 @@ const ingredientsList = {
       }}>
         {data ? i + 1 + '.' : 'new'}
       </Div>
-      <AmountInput onFocus={selectAll} {...float('amount', null)} placeholder="Amount" />
+      <AmountInput onPaste={paster} onFocus={selectAll} {...float('amount', null)} placeholder="Amount" />
       {/* TODO defaultunit? */}
       <UnitInput onFocus={selectAll} {...text('unit')} placeholder="Unit" />
       <IngredientInput
@@ -234,7 +249,7 @@ const ingredientsList = {
         : <Strut size={30} />}
     </Row>
   )
-}
+})
 
 const selectAll = e => {
   e.target.select()

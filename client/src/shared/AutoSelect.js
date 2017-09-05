@@ -124,6 +124,16 @@ export default class AutoSelect extends React.Component {
     this.setState({open: false})
   }
 
+  onAdd = () => {
+    if (!this.state.text.trim()) return
+    this.setState({loading: true})
+    this.props.onAdd(this.state.text).then(() => {
+      this.setState({loading: false})
+    }, err => {
+      this.setState({text: 'Error adding ingredient'})
+    })
+  }
+
   onKeyDown = e => {
     const {selectedIndex, filtered} = this.state
     const max = filtered.length - 1
@@ -132,13 +142,7 @@ export default class AutoSelect extends React.Component {
         e.preventDefault()
         this.setState({open: false}) // maybe don't blur on close? idk
         if (!filtered.length) {
-          if (!this.state.text.trim()) return
-          this.setState({loading: true})
-          this.props.onAdd(this.state.text).then(() => {
-            this.setState({loading: false})
-          }, err => {
-            this.setState({text: 'Error adding ingredient'})
-          })
+          this.onAdd()
         } else {
           this.props.onChange(filtered[selectedIndex].id)
         }
@@ -193,7 +197,7 @@ export default class AutoSelect extends React.Component {
 
   renderMenu() {
     const {open, text, filtered} = this.state
-    const {getName, value, options, placeholder, addText, onAdd} = this.props
+    const {getName, value, options, placeholder, addText} = this.props
 
     return <Portal style={{
         position: 'absolute',
@@ -212,23 +216,23 @@ export default class AutoSelect extends React.Component {
             () => this.onSelect(option.id),
           )
         ))}
-        {/*addText && renderOption(
+        {addText && renderOption(
           '$add$',
           addText,
           this.state.selectedIndex === filtered.length,
-          onAdd,
+          this.onAdd,
           {
             fontStyle: 'italic',
             color: '#555',
           }
-        )*/}
+        )}
       </Menu>
     </Portal>
   }
 
   render() {
     const {open, text} = this.state
-    const {value, options, placeholder, highlightEmpty, addText, onAdd} = this.props
+    const {value, options, placeholder, highlightEmpty, addText} = this.props
     // const i = this.currentIndex()
     // const name = i === null ? null : options[i].name
     const color = (value || (!text && !highlightEmpty)) ? 'white' : '#fee'
@@ -267,7 +271,7 @@ export default class AutoSelect extends React.Component {
         }}
         onBlur={() => this.setState({open: false})}
       />
-      {!value && text && <AddButton onClick={() => onAdd(text)}>{addText}</AddButton>}
+      {!open && !value && text && <AddButton onClick={this.onAdd}>Add</AddButton>}
       </Div>
       {open && this.renderMenu()}
     </Container>
