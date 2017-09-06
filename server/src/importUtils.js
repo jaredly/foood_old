@@ -137,12 +137,13 @@ const whichFraction = fract => {
 }
 
 export const fractionify = number => {
+  number = Math.round(number * 100) / 100
   const whole = Math.floor(number);
   const fract = number - whole;
-  if (!fract) return number
+  if (!fract) return number + ''
   const fstr = whichFraction(fract)
   if (!whole && fstr) return fstr
-  if (!fstr) return number
+  if (!fstr) return number + ''
   return whole + ' ' + fstr
 }
 

@@ -33,6 +33,8 @@ const Title = glamorous.div({
 
 const SubTitle = glamorous.div({
   fontSize: 16,
+  alignItems: 'center',
+  flexDirection: 'row',
   fontWeight: 'bold',
 })
 
@@ -56,48 +58,76 @@ const linkify = source => {
   ]
 }
 
-export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
+const lively = (initialState, render) => class Wrapper extends React.Component {
+  constructor(props) {
+    super()
+    if (typeof initialState === 'function') {
+      this.state = initialState(props)
+    } else {
+      this.state = initialState
+    }
+  }
+  update = fn => payload => {
+    if (typeof payload.persist === 'function' && payload.target && payload.currentTarget) {
+      payload.persist()
+    }
+    this.setState(state => fn(payload, state))
+  }
+  render() {
+    return render({...this.props, ...this.state, update: this.update})
+  }
+}
+
+const Header = glamorous.div({
+  borderBottom: '1px solid #aaa',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+})
+
+const Author = glamorous.div({
+  color: '#777',
+  fontSize: '80%',
+  margin: '8px 0',
+  marginLeft: 16,
+})
+
+const Ingredients = glamorous.div({
+  display: 'grid',
+  // gridTemplateColumns: '20px max-content max-content 1fr',
+  gridGap: '0px 0px',
+  backgroundColor: '#fff',
+  color: '#444',
+})
+
+const maybePositiveInt = t => {
+  const m = parseFloat(t)
+  if (isNaN(m)) return 0
+  if (m <= 0) return 0
+  return m
+}
+
+export const RecipeCardBase = lively({making: false, completedIngredients: {}, completedSteps: {}, times: 1}, ({
+  onEdit, expanded, recipe, making, update, completedIngredients, completedSteps, times,
+}) => {
   const {
-    id,
-    title,
-    description,
-    author: {name},
-    created,
-    updated,
-    tags,
-    source,
-    'yield': yield_,
-    yieldUnit,
-    cookTime,
-    prepTime,
-    totalTime,
+    id, title, description, author: {name}, created, updated, tags, source,
+    'yield': yield_, yieldUnit, cookTime, prepTime, totalTime,
     ingredients,
     instructions,
     ovenTemp,
   } = recipe
 
   return <div style={{flex: 1}}>
-    <div style={{
-      borderBottom: '1px solid #aaa',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-    }}>
+    <Header>
       <Title>{title}</Title>
-      <div style={{
-        color: '#777',
-        fontSize: '80%',
-        margin: '8px 0',
-        marginLeft: 16,
-      }}>
-        by {name}
-      </div>
+      <Author>by {name}</Author>
       <div style={{flex: 1}}/>
-      {expanded && 
-      <TopButton onClick={onEdit}>
-        <Edit size={24}/>
-      </TopButton>}
-    </div>
+      <TopButton onClick={update(() => ({making: !making, completedIngredients: {}, completedSteps: {}}))}>
+        {making ? 'Stop making' : 'Make'}
+      </TopButton>
+      {expanded && <TopButton onClick={onEdit}> <Edit size={24}/> </TopButton>}
+    </Header>
 
     <div style={{
       flex: 1,
@@ -113,53 +143,93 @@ export const RecipeCardBase = ({onEdit, expanded, recipe}) => {
     </Section>}
     <Strut size={16} />
     {miscRow({source, ovenTemp, cookTime, prepTime, totalTime, yieldUnit, 'yield': yield_})}
-    {/* {source && <div style={{padding: '8px 16px', fontSize: 12}}>{linkify(source)}</div>} */}
     <Section>
-      <SubTitle>Ingredients</SubTitle>
+      <SubTitle>
+        Ingredients
+        <Strut size={16} />
+        <input
+          placeholder="times"
+          style={{
+            width: 50,
+            border: 'none',
+            textAlign: 'right',
+          }}
+          value={times}
+          type="number"
+          onChange={update(e => ({times: maybePositiveInt(e.target.value)}))}
+        />
+        <div style={{fontWeight: '200', fontSize: 14}}>
+          {times === 1 ? 'batch' : 'batches'}
+        </div>
+      </SubTitle>
       <Strut size={16} />
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'max-content max-content 1fr',
-        gridGap: '8px 8px',
-        backgroundColor: '#fff',
-        color: '#444',
+      <Ingredients css={{
+        gridTemplateColumns: making
+          ? '30px max-content max-content 1fr'
+          : 'max-content max-content 1fr',
       }}>
-      {ingredients.map(({amount, unit, comments, ingredient: {id, name, plural}}, i) => (
-          [<div style={{textAlign: 'right', fontWeight: 'normal'}} key={id + 'a'}>
-            {fractionify(amount)}
+      {ingredients.map(({amount, unit, comments, ingredient: {id, name, plural}}, i) => {
+          const onClick = making ? update(e => ({completedIngredients: {...completedIngredients, [i]: !completedIngredients[i]}})) : undefined
+          const style = {
+            cursor: making ? 'pointer' : 'normal',
+            padding: making ? '8px 4px' : 4,
+            backgroundColor: completedIngredients[i] ? '#eee' : 'white'
+          }
+          if (completedIngredients[i]) style.color = '#aaa'
+          return [making && <div style={style} onClick={onClick}>
+            <input type="checkbox" checked={completedIngredients[i]}
+              onChange={() => {}}
+              style={{cursor: 'pointer'}}
+            />
           </div>,
-          <div key={id + 'c'} style={{color: '#555'}}>
+          <div onClick={onClick} style={{
+            textAlign: 'right', fontWeight: 'normal',
+            ...style,
+          }} key={id + 'a'}>
+            {fractionify(amount * times).slice(0, 5)}
+          </div>,
+          <div key={id + 'c'} onClick={onClick} style={{color: '#555', ...style}}>
             {smallUnit(unit)}
           </div>,
-          <div key={id + 'b'} style={{marginLeft: 8, flexDirection: 'row'}}>
+          <div key={id + 'b'} onClick={onClick} style={{...style, paddingLeft: 8, flexDirection: 'row'}}>
             {name}
             <div style={{fontStyle: 'italic', marginLeft: 16, flex: 1}}>
               {comments}
             </div>
           </div>]
-      ))}
-      </div>
+      })}
+      </Ingredients>
     </Section>
     <Strut size={24} />
     {expanded && <Section>
       <SubTitle>Instructions</SubTitle>
       <Strut size={8} />
-      <ol style={{margin: 0, paddingLeft: 24}}>
+      <ol style={{margin: 0, paddingLeft: 0}}>
         {instructions.map(({text, ingredientsUsed}, i) => (
-          <li key={i} style={{
-            padding: '4px 8px',
+          <glamorous.Li key={i} css={{
+            padding: making ? 8 : '4px 8px',
+            cursor: making ? 'pointer' : 'normal',
+            backgroundColor: completedSteps[i] ? '#eee' : 'white',
+            color: completedSteps[i] ? '#aaa' : 'black',
+            listStylePosition: 'inside',
+            marginLeft: 0,
             fontSize: 16,
             lineHeight: '24px',
-          }}>
+            ':hover': {
+              backgroundColor: making ? '#fafafa' : 'white',
+            }
+          }} onClick={
+            making ? update(e => ({completedSteps: {...completedSteps, [i]: !completedSteps[i]}})) : undefined
+          }>
             {text}
-          </li>
+          </glamorous.Li>
         ))}
       </ol>
       <Strut size={24} />
     </Section>}
     </div>
   </div>
-}
+})
 
 
 const interspersed = (list, maker) => {
