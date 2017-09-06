@@ -26,6 +26,15 @@ const Inner = div({
   boxShadow: '0 3px 10px #000',
   backgroundColor: 'white',
   borderRadius: 3,
+  '@media(max-width: 800px)': {
+    position: 'absolute',
+    top: 50,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    boxShadow: 'none',
+    borderRadius: 0,
+  },
 })
 
 export default ({onBack, children}) => <Backdrop onMouseDown={onBack}>

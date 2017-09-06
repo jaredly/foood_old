@@ -7,11 +7,16 @@ import {
     gql,
     graphql,
 } from 'react-apollo';
+import {Div} from 'glamorous'
 
 const Header = ({data: {email, name}}) => {
-  return <div>
+  return <Div css={{
+    '@media(max-width: 800px)': {
+
+    }
+  }}>
     Hello {name} {email}
-  </div>
+  </Div>
 }
 
 export const headerQuery = gql`

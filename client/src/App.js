@@ -34,25 +34,28 @@ const NavBar = glamorous.div({
   fontSize: 20,
   lineHeight: '30px',
   alignItems: 'center',
+  '@media(max-width: 500px)': {
+    fontSize: 14,
+  }
 })
 
 const Header = () => (
   <NavBar>
-    <Link to="/">
+    <Link to="/" style={{whiteSpace: 'nowrap'}}>
       Home
     </Link>
     <div style={{flexBasis: 20}} />
-    <Link to="/recipes/">
+    <Link to="/recipes/" style={{whiteSpace: 'nowrap'}}>
       My Recipes
     </Link>
     <div style={{flexBasis: 20}} />
-    <Link to="/lists/">
+    <Link to="/lists/" style={{whiteSpace: 'nowrap'}}>
       My Lists
     </Link>
     <div style={{flex: 1}} />
-    <input
+    {/* <glamorous.Input
       placeholder="Search"
-    />
+    /> */}
   </NavBar>
 )
 
