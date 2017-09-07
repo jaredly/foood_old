@@ -41,7 +41,7 @@ export default class FongoDb {
   }
 
   findByList(type, attr, value) {
-    return Promise.resolve(Object.values(this.data[type]).filter(o => o[attr].includes(value)))
+    return Promise.resolve(Object.values(this.data[type]).filter(o => o[attr].indexOf(value) !== -1))
   }
 
   set(type, id, value) {

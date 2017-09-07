@@ -10,7 +10,7 @@ import {
 import Plus from 'react-icons/lib/io/ios-plus-empty'
 import glamorous, {Div} from 'glamorous'
 
-import RecipeCard from './RecipeCard'
+import RecipeCardSmall from './RecipeCardSmall'
 
 export const ListView = ({id, list, onEdit}) => {
   const {updated, author, title, recipes} = list
@@ -85,7 +85,7 @@ export const ListView = ({id, list, onEdit}) => {
           }}
           key={r.id}
         >
-          <RecipeCard
+          <RecipeCardSmall
             id={r.id}
           />
         </Link>

@@ -126,6 +126,7 @@ export default class AutoSelect extends React.Component {
   }
 
   onAdd = () => {
+    if (!this.props.onAdd) return
     if (!this.state.text.trim()) return
     this.setState({loading: true, open: false})
     this.props.onAdd(this.state.text).then(() => {
@@ -137,7 +138,7 @@ export default class AutoSelect extends React.Component {
 
   onKeyDown = e => {
     const {selectedIndex, filtered} = this.state
-    const max = filtered.length - 1
+    const max = this.props.onAdd ? filtered.length : filtered.length - 1
     switch (e.key) {
       case 'Enter':
         e.preventDefault()
@@ -145,7 +146,7 @@ export default class AutoSelect extends React.Component {
         if (!filtered.length) {
           this.onAdd()
         } else {
-          this.props.onChange(filtered[selectedIndex].id)
+          this.props.onChange(filtered[selectedIndex])
         }
         return
       case 'Escape':
@@ -191,9 +192,9 @@ export default class AutoSelect extends React.Component {
     })
   }
 
-  onSelect = id => {
+  onSelect = item => {
     this.setState({open: false})
-    this.props.onChange(id)
+    this.props.onChange(item)
   }
 
   renderMenu() {
@@ -214,7 +215,7 @@ export default class AutoSelect extends React.Component {
             option.id,
             getName(option),
             i == this.state.selectedIndex,
-            () => this.onSelect(option.id),
+            () => this.onSelect(option),
           )
         ))}
         {addText && renderOption(
@@ -227,6 +228,7 @@ export default class AutoSelect extends React.Component {
             color: '#555',
           }
         )}
+        {!filtered.length && <Option disabled>Empty</Option>}
       </Menu>
     </Portal>
   }

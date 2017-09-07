@@ -39,7 +39,7 @@ export const resolvers = {
   Recipe: {
     author: getByAttr('users', 'authorId'),
     tags: getsByAttr('tags', 'tags'),
-    lists: getsByList('lists', 'id', 'recipes'),
+    lists: getsByList('lists', 'recipes', 'id'),
   },
   UserHome: {
     user: (_, __, {currentUser, db}) => db.get('users', currentUser),
@@ -61,6 +61,18 @@ export const resolvers = {
         instructions: recipe.instructions.map(addIds),
         ingredients: recipe.ingredients.map(addIds),
       })
+    },
+
+    removeRecipeFromList: async (_, {id, recipe}, {currentUser, db}) => {
+      const list = await db.get('lists', id)
+      list.recipes = list.recipes.filter(i => i !== recipe)
+      return db.set('lists', id, list)
+    },
+
+    addRecipeToList: async (_, {id, recipe}, {currentUser, db}) => {
+      const list = await db.get('lists', id)
+      list.recipes = list.recipes.filter(i => i !== recipe).concat([recipe])
+      return db.set('lists', id, list)
     },
 
     deleteRecipe: async (_, {id}, {currentUser, db}) => {

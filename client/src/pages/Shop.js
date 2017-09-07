@@ -65,7 +65,7 @@ const ShopPage = lively({editing: false, quantities: {}, customAmounts: {}, gott
           fontSize: 24,
           borderRadius: 2,
           margin: '4px 0',
-          backgroundColor: gotten[id] ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.4)',
+          backgroundColor: gotten[id] ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.7)',
           color: gotten[id] ? '#aaa' : '',
             textDecorationLine: gotten[id] ? 'line-through' : '',
           ':hover': {

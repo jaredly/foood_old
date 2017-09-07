@@ -233,6 +233,9 @@ type Mutation {
   updateRecipe(id: ID!, recipe: RecipeInput!): Recipe!
   deleteRecipe(id: ID!): [ID!]!
 
+  removeRecipeFromList(id: ID!, recipe: ID!): Boolean
+  addRecipeToList(id: ID!, recipe: ID!): Boolean
+
   addList(list: ListInput!): List!
   updateList(id: ID!, list: ListInput!): List!
 

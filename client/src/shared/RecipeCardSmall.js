@@ -11,8 +11,6 @@ import {
 import Edit from 'react-icons/lib/io/edit';
 import Close from 'react-icons/lib/io/close';
 import {smallUnit, fractionify} from './importUtils'
-import lively from './lively'
-import RecipeListEditor from './RecipeListEditor'
 
 
 const TopButton = glamorous.div({
@@ -90,9 +88,7 @@ const maybePositiveInt = t => {
   return m
 }
 
-export const RecipeCardBase = lively({making: false, completedIngredients: {}, completedSteps: {}, times: 1}, ({
-  onEdit, onClose, recipe, making, update, completedIngredients, completedSteps, times,
-}) => {
+export const RecipeCardBase = ({recipe}) => {
   const {
     id, title, description, author: {name}, created, updated, tags, source,
     'yield': yield_, yieldUnit, cookTime, prepTime, totalTime,
@@ -104,13 +100,6 @@ export const RecipeCardBase = lively({making: false, completedIngredients: {}, c
   return <div style={{flex: 1}}>
     <Header>
       <Title>{title}</Title>
-      <div style={{flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'flex-start'}}>
-        <TopButton onClick={update(() => ({making: !making, completedIngredients: {}, completedSteps: {}}))}>
-          {making ? 'Stop making' : 'Make'}
-        </TopButton>
-        <TopButton onClick={onEdit}> <Edit size={24}/> </TopButton>
-        {onClose && <TopButton onClick={onClose}> <Close size={24}/> </TopButton>}
-      </div>
     </Header>
 
     <div style={{
@@ -130,52 +119,25 @@ export const RecipeCardBase = lively({making: false, completedIngredients: {}, c
       <Section>
         <SubTitle>
           Ingredients
-          <Strut size={16} />
-          <input
-            placeholder="times"
-            style={{
-              width: 50,
-              border: 'none',
-              textAlign: 'right',
-            }}
-            value={times}
-            type="number"
-            onChange={update(e => ({times: maybePositiveInt(e.target.value)}))}
-          />
-          <div style={{fontWeight: '200', fontSize: 14}}>
-            {times === 1 ? 'batch' : 'batches'}
-          </div>
         </SubTitle>
         <Strut size={16} />
-        <Ingredients css={{
-          gridTemplateColumns: making
-            ? '30px max-content max-content 1fr'
-            : 'max-content max-content 1fr',
-        }}>
+        <Ingredients css={{gridTemplateColumns: 'max-content max-content 1fr'}}>
         {ingredients.map(({amount, unit, comments, ingredient: {id, name, plural}}, i) => {
-            const onClick = making ? update(e => ({completedIngredients: {...completedIngredients, [i]: !completedIngredients[i]}})) : undefined
             const style = {
-              cursor: making ? 'pointer' : 'normal',
-              padding: making ? '8px 4px' : 4,
-              backgroundColor: completedIngredients[i] ? '#eee' : 'white'
+              cursor: 'normal',
+              padding: 4,
+              backgroundColor: 'white'
             }
-            if (completedIngredients[i]) style.color = '#aaa'
-            return [making && <div style={style} onClick={onClick}>
-              <input type="checkbox" checked={completedIngredients[i]}
-                onChange={() => {}}
-                style={{cursor: 'pointer'}}
-              />
-            </div>,
-            <div onClick={onClick} style={{
+            return [<div style={{
               textAlign: 'right', fontWeight: 'normal',
               ...style,
             }} key={id + 'a'}>
-              {fractionify(amount * times).slice(0, 5)}
+              {fractionify(amount).slice(0, 5)}
             </div>,
-            <div key={id + 'c'} onClick={onClick} style={{color: '#555', ...style}}>
+            <div key={id + 'c'} style={{color: '#555', ...style}}>
               {smallUnit(unit)}
             </div>,
-            <div key={id + 'b'} onClick={onClick} style={{...style, paddingLeft: 8, flexDirection: 'row'}}>
+            <div key={id + 'b'} style={{...style, paddingLeft: 8, flexDirection: 'row'}}>
               {name}
               <div style={{fontStyle: 'italic', marginLeft: 16, flex: 1}}>
                 {comments}
@@ -185,40 +147,10 @@ export const RecipeCardBase = lively({making: false, completedIngredients: {}, c
         </Ingredients>
       </Section>
       <Strut size={24} />
-      <Section>
-        <SubTitle>Instructions</SubTitle>
-        <Strut size={8} />
-        <ol style={{margin: 0, paddingLeft: 0}}>
-          {instructions.map(({text, ingredientsUsed}, i) => (
-            <glamorous.Li key={i} css={{
-              padding: making ? 8 : '4px 8px',
-              cursor: making ? 'pointer' : 'normal',
-              backgroundColor: completedSteps[i] ? '#eee' : 'white',
-              color: completedSteps[i] ? '#aaa' : 'black',
-              listStylePosition: 'inside',
-              marginLeft: 0,
-              fontSize: 16,
-              lineHeight: '24px',
-              ':hover': {
-                backgroundColor: making ? '#fafafa' : 'white',
-              }
-            }} onClick={
-              making ? update(e => ({completedSteps: {...completedSteps, [i]: !completedSteps[i]}})) : undefined
-            }>
-              {text}
-            </glamorous.Li>
-          ))}
-        </ol>
-        <Strut size={24} />
-      </Section>
-      <Section>
-        <SubTitle>Lists</SubTitle>
-        <RecipeListEditor id={id} />
-      </Section>
-      <Strut size={24} />
     </div>
   </div>
-})
+}
+
 
 const interspersed = (list, maker) => {
   const res = []
@@ -256,10 +188,10 @@ const miscRow = ({source, 'yield': yield_, yieldUnit, ovenTemp, cookTime, prepTi
   </Row>
 }
 
-const RecipeCard = ({onEdit, onClose, data: {recipe, error, loading}}) => {
+const RecipeCard = ({onEdit, onClose, expanded, data: {recipe, error, loading}}) => {
   if (error) return <div>{error}</div>
   if (loading) return <div style={{padding: 40}}>loading</div>
-  return <RecipeCardBase onEdit={onEdit} onClose={onClose} recipe={recipe} />
+  return <RecipeCardBase onEdit={onEdit} onClose={onClose} expanded={expanded} recipe={recipe} />
 }
 
 // TODO allow you to check of things as you do them
@@ -283,10 +215,6 @@ fragment RecipeCardFragment on Recipe {
   prepTime
   totalTime
   ovenTemp
-  instructions {
-    text
-    ingredientsUsed { id }
-  }
   ingredients {
     amount
     unit
@@ -318,4 +246,5 @@ export default graphql(recipeCardQuery, {
     variables: {id},
   })
 })(RecipeCard)
+
 
