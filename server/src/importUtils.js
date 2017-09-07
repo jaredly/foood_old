@@ -128,18 +128,25 @@ export const parseUnit = (amount, text) => {
 }
 
 const whichFraction = fract => {
-  if (fract === 1/3 || fract === 0.33 || fract === 0.333) return '⅓'
-  if (fract === 2/3 || fract === 0.66 || fract === 0.666) return '⅔'
-  const fstr = {
+  // if (fract === 1/3 || fract === 0.33 || fract === 0.333) return '⅓'
+  // if (fract === 2/3 || fract === 0.66 || fract === 0.666) return '⅔'
+  const fracs = {
     0.125: '⅛',
+    0.333: '⅓',
     0.375: '⅜',
     0.625: '⅝',
+    0.666: '⅔',
     0.875: '⅞',
     0.25: '¼',
     0.5: '½',
     0.75: '¾'
-  }[fract];
-  return fstr
+  }
+  for (let num in fracs) {
+    num = +num
+    if (fract > num - 0.01 && fract < num + 0.01) {
+      return fracs[num]
+    }
+  }
 }
 
 export const fractionify = number => {

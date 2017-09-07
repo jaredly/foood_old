@@ -41,6 +41,7 @@ export const ListView = ({id, list, onEdit}) => {
     }}>
       {titleNode}
       <div style={{flex: 1}} />
+      {id && <Link to={`/list/${id}/shop`}>Shop</Link>}
       {onEdit && <Div
         css={{
           cursor: 'pointer',

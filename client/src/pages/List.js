@@ -10,50 +10,45 @@ import {
 
 import {ListView, listFragment} from '../shared/List'
 import FullListEditor from '../shared/FullListEditor'
+import lively from '../shared/lively'
+import glamorous from 'glamorous'
 
-class ListPage extends React.Component {
-  constructor() {
-    super()
+const Container = glamorous.div({
+  alignItems: 'stretch',
+  alignSelf: 'center',
+  padding: 10,
+  width: 600,
+  overflowX: 'auto',
+})
 
-    this.state = {
-      editing: false,
-    }
-  }
+const ListPage = lively({editing: false}, ({
+  editing, update, match: {params: {id}}, history, data: {list, loading, error}
+}) => {
+  if (error) return <div>{JSON.stringify(error, null, 2)} error</div>
+  if (loading) return <div>loading</div>
 
-  render() {
-    const {match: {params: {id}}, history, data: {list, loading, error}} = this.props
-    if (error) return <div>{JSON.stringify(error, null, 2)} error</div>
-    if (loading) return <div>loading</div>
-
-    if (this.state.editing) {
-      return <div style={{
-        alignItems: 'center',
-        padding: 10,
-        overflowX: 'auto',
-      }}>
-         <FullListEditor
-          id={id}
-          list={list}
-          onDone={() => this.setState({editing: false})}
-        /> 
-      </div>
-    }
-
+  if (editing) {
     return <div style={{
-      alignItems: 'stretch',
-      alignSelf: 'center',
+      alignItems: 'center',
       padding: 10,
-      width: 600,
       overflowX: 'auto',
     }}>
-      <ListView
+      <FullListEditor
         id={id}
         list={list}
-        onEdit={() => this.setState({editing: true})}
-      />
+        onDone={update({editing: false})}
+      /> 
     </div>
   }
-}
+
+  return <Container>
+    <ListView
+      id={id}
+      list={list}
+      onEdit={update({editing: true})}
+    />
+  </Container>
+})
 
 export const listsQuery = gql`
 ${listFragment}
