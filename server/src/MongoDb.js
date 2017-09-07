@@ -54,11 +54,11 @@ export default class MongoDb {
   }
 
   findByContains(type, attr, list) {
-    return this.db.collection(type).find({[attr]: {$in: list || []}})
+    return this.db.collection(type).find({[attr]: {$in: list || []}}).toArray()
   }
 
   findByList(type, attr, value) {
-    return this.db.collection(type).find({[attr]: {$elemMatch: value}})
+    return this.db.collection(type).find({[attr]: {$elemMatch: {$eq: value}}}).toArray()
   }
 
   delete(type, id) {
