@@ -26,6 +26,7 @@ const Recipes = ({history, data: {home, loading, error}}) => {
           to={{pathname: "/recipe/" + r.id, state: {modal: true}}}
           style={{
             width: 600,
+            maxWidth: '100%',
             margin: 10,
             boxShadow: '0 0 3px #aaa',
             backgroundColor: 'white',

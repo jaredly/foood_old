@@ -9,6 +9,7 @@ import {
     graphql,
 } from 'react-apollo';
 import Edit from 'react-icons/lib/io/edit';
+import Close from 'react-icons/lib/io/close';
 import {smallUnit, fractionify} from './importUtils'
 import lively from './lively'
 
@@ -25,7 +26,8 @@ const TopButton = glamorous.div({
 
 const Title = glamorous.div({
   fontSize: 20,
-  alignSelf: 'center',
+  flex: 1,
+  // alignSelf: 'center',
   whiteSpace: 'normal',
   fontWeight: 'bold',
   maxWidth: '100%',
@@ -62,7 +64,6 @@ const linkify = source => {
 const Header = glamorous.div({
   borderBottom: '1px solid #aaa',
   flexDirection: 'row',
-  flexWrap: 'wrap',
   alignItems: 'center',
 })
 
@@ -89,7 +90,7 @@ const maybePositiveInt = t => {
 }
 
 export const RecipeCardBase = lively({making: false, completedIngredients: {}, completedSteps: {}, times: 1}, ({
-  onEdit, expanded, recipe, making, update, completedIngredients, completedSteps, times,
+  onEdit, onClose, expanded, recipe, making, update, completedIngredients, completedSteps, times,
 }) => {
   const {
     id, title, description, author: {name}, created, updated, tags, source,
@@ -102,12 +103,13 @@ export const RecipeCardBase = lively({making: false, completedIngredients: {}, c
   return <div style={{flex: 1}}>
     <Header>
       <Title>{title}</Title>
-      <Author>by {name}</Author>
-      <div style={{flex: 1}}/>
-      {expanded && <TopButton onClick={update(() => ({making: !making, completedIngredients: {}, completedSteps: {}}))}>
-        {making ? 'Stop making' : 'Make'}
-      </TopButton>}
-      {expanded && <TopButton onClick={onEdit}> <Edit size={24}/> </TopButton>}
+      <div style={{flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'flex-start'}}>
+        {expanded && <TopButton onClick={update(() => ({making: !making, completedIngredients: {}, completedSteps: {}}))}>
+          {making ? 'Stop making' : 'Make'}
+        </TopButton>}
+        {expanded && <TopButton onClick={onEdit}> <Edit size={24}/> </TopButton>}
+        {onClose && <TopButton onClick={onClose}> <Close size={24}/> </TopButton>}
+      </div>
     </Header>
 
     <div style={{
@@ -249,10 +251,10 @@ const miscRow = ({source, 'yield': yield_, yieldUnit, ovenTemp, cookTime, prepTi
   </Row>
 }
 
-const RecipeCard = ({onEdit, expanded, data: {recipe, error, loading}}) => {
+const RecipeCard = ({onEdit, onClose, expanded, data: {recipe, error, loading}}) => {
   if (error) return <div>{error}</div>
   if (loading) return <div style={{padding: 40}}>loading</div>
-  return <RecipeCardBase onEdit={onEdit} expanded={expanded} recipe={recipe} />
+  return <RecipeCardBase onEdit={onEdit} onClose={onClose} expanded={expanded} recipe={recipe} />
 }
 
 // TODO allow you to check of things as you do them

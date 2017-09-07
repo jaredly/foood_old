@@ -18,7 +18,7 @@ import {RecipeCardBase} from './RecipeCard'
 
 import lively from './lively'
 
-const Recipe = lively({editing: false}, ({id, noBorder, onDelete, update, editing}) => {
+const Recipe = lively({editing: false}, ({id, noBorder, onBack, onDelete, update, editing}) => {
   const body = <RecipeQuery id={id}>
     {({data: {error, loading, recipe}}) => {
       if (error) return <div>Unable to load the recipe</div>
@@ -28,6 +28,7 @@ const Recipe = lively({editing: false}, ({id, noBorder, onDelete, update, editin
       } else {
         return <RecipeCardBase
           recipe={recipe}
+          onClose={onBack}
           onEdit={update({editing: true})}
           expanded
         />

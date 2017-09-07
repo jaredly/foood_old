@@ -30,6 +30,7 @@ const Inner = div({
     position: 'absolute',
     top: 50,
     bottom: 0,
+    height: 'auto',
     left: 0,
     right: 0,
     boxShadow: 'none',

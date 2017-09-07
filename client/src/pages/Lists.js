@@ -16,9 +16,10 @@ const Lists = ({history, data: {home, loading, error}}) => {
   if (loading) return <div>loading</div>
   return <div style={{
     // backgroundColor: 'white',
-    alignItems: 'center',
+    alignItems: 'stretch',
     padding: 10,
-    overflowX: 'auto',
+    width: 500,
+    maxWidth: '100%',
   }}>
     <Link to='/list/new'>
       <Div css={{
@@ -35,7 +36,6 @@ const Lists = ({history, data: {home, loading, error}}) => {
       <Link to={`/list/${l.id}`} key={l.id} >
         <Div
           css={{
-            width: 500,
             padding: 10,
             maxHeight: 500,
             display: 'flex',

@@ -55,7 +55,7 @@ const validate = ({title}) => {
 const ListEditor = ({list, onAction, action, onDone}) => {
   return <Form initial={list}>
     {({text, float, bool, list, toggle, set, setMany}, data, isModified) => (
-      <Div css={{flex: 1, backgroundColor: 'white', width: 500}}>
+      <Div css={{flex: 1, backgroundColor: 'white', width: 500, margin: 8, maxWidth: '100%'}}>
         {JSON.stringify(data.error)}
         <Row css={{
             borderBottom: '1px solid #aaa',

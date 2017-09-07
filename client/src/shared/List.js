@@ -16,9 +16,11 @@ export const ListView = ({id, list, onEdit}) => {
   const {updated, author, title, recipes} = list
 
   let titleNode = <Div css={{
-    marginLeft: 8,
+    fontSize: 24,
+    textAlign: 'center',
+    margin: 8,
   }}>
-    {title} (updated {new Date(updated).toLocaleDateString()})
+    {title}
   </Div>
 
   if (id) {
@@ -28,20 +30,21 @@ export const ListView = ({id, list, onEdit}) => {
   }
 
   return <div style={{
-    boxShadow: '0 0 3px #aaa',
-    backgroundColor: 'white',
+    // boxShadow: '0 0 3px #aaa',
+    // backgroundColor: 'white',
     // borderRadius: 3,
     flex: 1,
   }}>
+    {titleNode}
     <div style={{
       flexDirection: 'row',
       alignItems: 'center',
-      boxShadow: '0 2px 2px #aaa ',
+      margin: 8,
       zIndex: 1,
     }}>
-      {titleNode}
+      (updated {new Date(updated).toLocaleDateString()})
       <div style={{flex: 1}} />
-      {id && <Link to={`/list/${id}/shop`}>Shop</Link>}
+      {id && <Link to={`/list/${id}/shop`} style={{padding: 8}}>Shop</Link>}
       {onEdit && <Div
         css={{
           cursor: 'pointer',
@@ -60,7 +63,7 @@ export const ListView = ({id, list, onEdit}) => {
             backgroundColor: '#eee',
           }
         }}>
-          <Plus/>
+          Add
         </Div>
       </Link>
     </div>
@@ -77,6 +80,7 @@ export const ListView = ({id, list, onEdit}) => {
             margin: 10,
             cursor: 'pointer',
             boxShadow: '0 0 3px #aaa',
+            backgroundColor: 'white',
             // borderRadius: 3,
           }}
           key={r.id}

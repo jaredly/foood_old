@@ -18,6 +18,7 @@ const Container = glamorous.div({
   alignSelf: 'center',
   padding: 10,
   width: 600,
+  maxWidth: '100%',
   overflowX: 'auto',
 })
 

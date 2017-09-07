@@ -19,6 +19,7 @@ const Container = glamorous.div({
   alignSelf: 'center',
   padding: 10,
   width: 600,
+  maxWidth: '100%',
   overflowX: 'auto',
 })
 
@@ -48,7 +49,7 @@ const ShopPage = lively({editing: false, quantities: {}, customAmounts: {}, gott
 
   return <Container>
     <div style={{fontSize: 24, textAlign: 'center', margin: 8,}}>
-      {title} shopping list
+      <Link style={{textDecoration: 'underline'}} to={`/list/${id}`}>{title}</Link> shopping list
     </div>
     {/* <div>
       Edit recipe quantities
@@ -62,6 +63,7 @@ const ShopPage = lively({editing: false, quantities: {}, customAmounts: {}, gott
           cursor: 'pointer',
           padding: '8px 12px',
           fontSize: 24,
+          borderRadius: 2,
           margin: '4px 0',
           backgroundColor: gotten[id] ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.4)',
           color: gotten[id] ? '#aaa' : '',

@@ -103,7 +103,7 @@ class Body extends Component {
             <AddRecipe noBorder {...props} />
           </Modal>} />
         <Route path="/recipe/:id" render={props => <Modal onBack={props.history.goBack}>
-            <Recipe noBorder {...props} onDelete={props.history.goBack}/>
+            <Recipe noBorder {...props} onBack={props.history.goBack} onDelete={props.history.goBack}/>
         </Modal>} />
       </Switch>
       }
