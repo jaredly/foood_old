@@ -33,6 +33,7 @@ export const resolvers = {
   List: {
     author: getByAttr('users', 'authorId'),
     recipes: getsByAttr('recipes', 'recipes'),
+    recipeCount: (obj, _, {db}) => obj.recipes.length,
   },
   Recipe: {
     author: getByAttr('users', 'authorId'),

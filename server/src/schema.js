@@ -51,6 +51,7 @@ type List {
   editors: [User!]!
   title: String!
   recipes(start: Int, max: Int): [Recipe!]!
+  recipeCount: Int!
 }
 
 type Comment {

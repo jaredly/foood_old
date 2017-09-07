@@ -32,17 +32,25 @@ const Lists = ({history, data: {home, loading, error}}) => {
       </Div>
     </Link>
     {home.user.lists.map(l => (
-      <div
-        style={{
-          width: 500,
-          margin: 10,
-          maxHeight: 500,
-          // cursor: 'pointer',
-        }}
-        key={l.id}
-      >
-        <List id={l.id} />
-      </div>
+      <Link to={`/list/${l.id}`} key={l.id} >
+        <Div
+          css={{
+            width: 500,
+            padding: 10,
+            maxHeight: 500,
+            display: 'flex',
+            flexDirection: 'row',
+            ':hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            },
+            // cursor: 'pointer',
+          }}
+        >
+          {l.title}
+          <div style={{flex: 1}}/>
+          {l.recipeCount}
+        </Div>
+      </Link>
     ))}
   </div>
 }
@@ -53,6 +61,8 @@ query ListsQuery {
     user {
       lists {
         id
+        title
+        recipeCount
       }
     }
   }

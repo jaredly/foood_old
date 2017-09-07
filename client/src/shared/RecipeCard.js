@@ -11,12 +11,12 @@ import {
 import Edit from 'react-icons/lib/io/edit';
 import {smallUnit, fractionify} from './importUtils'
 
+
 const TopButton = glamorous.div({
   cursor: 'pointer',
   backgroundColor: 'transparent',
   border: 'none',
   padding: 7,
-  // padding: 8,
   ':hover': {
     backgroundColor: '#eee',
   }
@@ -123,9 +123,9 @@ export const RecipeCardBase = lively({making: false, completedIngredients: {}, c
       <Title>{title}</Title>
       <Author>by {name}</Author>
       <div style={{flex: 1}}/>
-      <TopButton onClick={update(() => ({making: !making, completedIngredients: {}, completedSteps: {}}))}>
+      {expanded && <TopButton onClick={update(() => ({making: !making, completedIngredients: {}, completedSteps: {}}))}>
         {making ? 'Stop making' : 'Make'}
-      </TopButton>
+      </TopButton>}
       {expanded && <TopButton onClick={onEdit}> <Edit size={24}/> </TopButton>}
     </Header>
 
