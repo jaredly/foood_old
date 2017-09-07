@@ -40,3 +40,4 @@ server/config.json
 public
 .env
 run.sh
+save.json
