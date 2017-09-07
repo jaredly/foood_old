@@ -231,6 +231,7 @@ type Query {
 type Mutation {
   addRecipe(recipe: RecipeInput!): Recipe!
   updateRecipe(id: ID!, recipe: RecipeInput!): Recipe!
+  deleteRecipe(id: ID!): [ID!]!
 
   addList(list: ListInput!): List!
   updateList(id: ID!, list: ListInput!): List!

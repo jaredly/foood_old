@@ -57,6 +57,14 @@ export default class MongoDb {
     return this.db.collection(type).find({[attr]: {$in: list || []}})
   }
 
+  findByList(type, attr, value) {
+    return this.db.collection(type).find({[attr]: {$elemMatch: value}})
+  }
+
+  delete(type, id) {
+    return this.db.collection(type).remove({_id: id}, 1)
+  }
+
   set(type, id, value) {
     id = '' + id
     return this.db.collection(type)

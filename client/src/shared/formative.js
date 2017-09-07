@@ -67,7 +67,7 @@ export default class Form extends Component {
       data: {...data, [name]: !(data[name] == null ? default_ : data[name])}, changed: true
     })),
     set: this.setValue,
-    setMany: data => this.setState({data: {...this.state.data, ...data}}),
+    setMany: data => this.setState({data: {...this.state.data, ...data}, changed: true}),
     list: ({name, container, item, blank}) => {
       const items = this.state.data[name] || []
       const outerName = name

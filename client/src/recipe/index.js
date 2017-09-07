@@ -11,8 +11,10 @@ import Modal from '../shared/Modal'
 
 import Recipe from '../shared/Recipe'
 
-const RecipePage = ({match: {params: {id}, url}, history, parent, noBorder}) => {
-  return <Recipe id={id} noBorder={noBorder} />
+const RecipePage = ({match: {params: {id}, url}, history, parent, onDelete, noBorder}) => {
+  return <Recipe id={id} noBorder={noBorder}
+  onDelete={onDelete ? onDelete : () => history.push('/')}
+  />
 }
 
 export default RecipePage

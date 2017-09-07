@@ -8,6 +8,7 @@ const getsByAttr = (type, attr) => (obj, _, {db}) => db.gets(type, obj[attr])
 const getsByParam = (type, param) => (_, params, {db}) => db.find(type, param, params[param])
 const getsBackByAttr = (type, attr, objAttr) => (parent, _, {db}) => db.find(type, objAttr, parent[attr])
 const getsByContains = (type, attr, parentAttr) => (parent, _, {db}) => db.findByContains(type, attr, parent[parentAttr])
+const getsByList = (type, attr, parentAttr) => (parent, _, {db}) => db.findByList(type, attr, parent[parentAttr])
 
 const uuid = () => Math.random().toString(16).slice(2)
 
@@ -38,7 +39,7 @@ export const resolvers = {
   Recipe: {
     author: getByAttr('users', 'authorId'),
     tags: getsByAttr('tags', 'tags'),
-    lists: getsByContains('list', 'id', 'recipes'),
+    lists: getsByList('lists', 'id', 'recipes'),
   },
   UserHome: {
     user: (_, __, {currentUser, db}) => db.get('users', currentUser),
@@ -60,6 +61,19 @@ export const resolvers = {
         instructions: recipe.instructions.map(addIds),
         ingredients: recipe.ingredients.map(addIds),
       })
+    },
+
+    deleteRecipe: async (_, {id}, {currentUser, db}) => {
+      // TODO check auth
+      const lists = await db.findByList('lists', 'recipes', id)
+      console.log('found', lists, id)
+      const newLists = lists.map(list => ({
+        ...list,
+        recipes: list.recipes.filter(i => i !== id),
+      }))
+      await db.sets('lists', newLists)
+      await db.delete('recipes', id)
+      return lists.map(l => l.id)
     },
 
     updateRecipe: (_, {id, recipe}, {currentUser, db}) => {

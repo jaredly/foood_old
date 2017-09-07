@@ -39,15 +39,15 @@ export default text => {
       .map(unwhite)
       .map(parseIngredient)
   } 
-  console.log(ingredients)
+  // console.log(ingredients)
 
   const allRecipeInstructions = $('[itemprop=recipeInstructions]')
     .map((i, elem) => {
       const dt = $(elem).find('dt').get()
-      console.log('instructions: dt', dt.length)
+      // console.log('instructions: dt', dt.length)
       if (dt.length) return dt.map(el => $(el).text())
       const li = $(elem).find('li').get()
-      console.log('instructions: li', li.length)
+      // console.log('instructions: li', li.length)
       if (li.length) return li.map(el => $(el).text())
       return [$(elem).text()]
     })

@@ -16,37 +16,32 @@ import {listFragment} from '../shared/List'
 import FullRecipeEditor from './FullRecipeEditor'
 import {RecipeCardBase} from './RecipeCard'
 
-class Recipe extends Component {
-  state = {editing: false}
+import lively from './lively'
 
-  done = () => this.setState({editing: false})
+const Recipe = lively({editing: false}, ({id, noBorder, onDelete, update, editing}) => {
+  const body = <RecipeQuery id={id}>
+    {({data: {error, loading, recipe}}) => {
+      if (error) return <div>Unable to load the recipe</div>
+      if (loading) return <div>Loading...</div>
+      if (editing) {
+        return <FullRecipeEditor id={id} recipe={recipe} onDelete={onDelete} onDone={update({editing: false})} />
+      } else {
+        return <RecipeCardBase
+          recipe={recipe}
+          onEdit={update({editing: true})}
+          expanded
+        />
+      }
+    }}
+  </RecipeQuery>
 
-  render() {
-    const {id, noBorder} = this.props
-    const body = <RecipeQuery id={id}>
-      {({data: {error, loading, recipe}}) => {
-        if (error) return <div>Unable to load the recipe</div>
-        if (loading) return <div>Loading...</div>
-        if (this.state.editing) {
-          return <FullRecipeEditor id={id} recipe={recipe} onDone={this.done} />
-        } else {
-          return <RecipeCardBase
-            recipe={recipe}
-            onEdit={() => this.setState({editing: true})}
-            expanded
-          />
-        }
-      }}
-    </RecipeQuery>
-
-    if (noBorder) return body
-    return <div style={{
-      margin: 20,
-      backgroundColor: 'white',
-      boxShadow: '0 0 5px #aaa',
-      borderRadius: 4,
-    }}>{body}</div>
-  }
-}
+  if (noBorder) return body
+  return <div style={{
+    margin: 20,
+    backgroundColor: 'white',
+    boxShadow: '0 0 5px #aaa',
+    borderRadius: 4,
+  }}>{body}</div>
+})
 
 export default Recipe

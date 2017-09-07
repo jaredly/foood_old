@@ -16,6 +16,8 @@ import {maybeFindIngredient} from './importUtils'
 import apolloClient from '../apolloClient'
 import {gql} from 'react-apollo';
 
+import lively from './lively'
+
 
 import {parseIngredient, splitList} from './importUtils'
 
@@ -134,7 +136,15 @@ const instructionsPaster = (data, set) => (e: ClipboardEvent, i: number) => {
   }
 }
 
-const RecipeEditor = ({recipe, onAction, action, onDone}) => {
+const DeleteButton = lively({really: false}, ({really, onDelete, update}) => really
+  ? <div style={{flexDirection: 'row'}}>
+      <button onClick={onDelete}>Really delete</button>
+      <button onClick={update(() => ({really: false}))}>Just kidding</button>
+    </div>
+  : <button onClick={update(() => ({really: true}))}>Delete</button>
+)
+
+const RecipeEditor = ({recipe, onAction, onDelete, action, onDone}) => {
   return <Form initial={recipe}>
     {({text, float, bool, list, toggle, set, setMany}, data, isModified) => (
       <Div css={{flex: 1}}>
@@ -182,11 +192,18 @@ const RecipeEditor = ({recipe, onAction, action, onDone}) => {
           <Label>Instructions</Label>
           {list(instructionsList(instructionsPaster(data, set)))}
         </Div>
-        <RecipeImporter
-          onDone={recipe => {
-            setMany(recipe)
-          }}
-        />
+        <Div css={{
+          flexDirection: 'row',
+        }}>
+          <Div css={{flex: 1}}>
+            <RecipeImporter
+              onDone={recipe => {
+                setMany(recipe)
+              }}
+            />
+          </Div>
+          {onDelete && <DeleteButton onDelete={onDelete} />}
+        </Div>
       </Div>
     )}
   </Form>

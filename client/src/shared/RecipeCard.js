@@ -10,6 +10,7 @@ import {
 } from 'react-apollo';
 import Edit from 'react-icons/lib/io/edit';
 import {smallUnit, fractionify} from './importUtils'
+import lively from './lively'
 
 
 const TopButton = glamorous.div({
@@ -56,26 +57,6 @@ const linkify = source => {
     <a key="aa" style={{color: 'blue'}} target="_blank" href={maybePrefix(match[0])}>source</a>,
     source.slice(index + match[0].length),
   ]
-}
-
-const lively = (initialState, render) => class Wrapper extends React.Component {
-  constructor(props) {
-    super()
-    if (typeof initialState === 'function') {
-      this.state = initialState(props)
-    } else {
-      this.state = initialState
-    }
-  }
-  update = fn => payload => {
-    if (typeof payload.persist === 'function' && payload.target && payload.currentTarget) {
-      payload.persist()
-    }
-    this.setState(state => fn(payload, state))
-  }
-  render() {
-    return render({...this.props, ...this.state, update: this.update})
-  }
 }
 
 const Header = glamorous.div({
